@@ -1,0 +1,32 @@
+<div #chartContainer style="width: 100%;">
+    <div #graphContainer style="position: relative; width: 100%;">
+        <svg class="svg-plot" [ngClass]="'svg-' + item"  *ngFor="let item of (groupSet | async)" #svgPlot>
+            <defs>
+                <clipPath [id]="'clip-' + item">
+                    <rect [attr.width]="plotProps.width" [attr.height]="plotProps.height"></rect>
+                </clipPath>
+            </defs>
+        </svg>
+        <div #tooltipContainer
+             *ngFor="let item of (groupSet | async)"
+             style="position: absolute; top:0; left: 0; opacity: 0"
+             [ngClass]="'tooltip-container-' + item">
+        </div>
+    </div>
+
+    <svg #timecontext
+         [style.width]="'100%'"
+         [style.height]="'80px'"
+         [style.display]="(options$ | async).showTimeline ? 'block' : 'none'">
+        <g class="context" [attr.transform]="'translate('+ padding.left +',0)'">
+            <g class="lines" #timecontextLine></g>
+            <g  #timecontextBrush></g>
+            <g class="axis" #axisTimelineBottom [attr.transform]="'translate(0,40)'"></g>
+            <g class="axis timeline-axis" #axiTimelineLeftAxis></g>
+            <g class="axis timeline-axis" #axisTimelineRightAxis [attr.transform] = "'translate(' + this.plotProps.width + ', 0)'"></g>
+        </g>
+    </svg>
+</div>
+
+
+<canvas #measureCanvas style="display: none"></canvas>

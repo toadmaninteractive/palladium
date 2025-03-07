@@ -1,0 +1,46 @@
+<perfect-scrollbar *ngIf="patchNotes?.length > 0; else noProjectPatchNotes" class="m-scrollable m-scroller">
+    <div class="m-timeline-2" style="font-size: 10px;">
+        <div class="m-timeline-2__items" *ngFor="let patch of patchNotes; index as i">
+            <div class="m-timeline-2__item">
+                <div class="m-timeline-2__item-time f-s-14 f-w-400 basic-font pt-075">
+                    {{ patch.addedAt | date : 'LLL dd, yyyy' }}
+                </div>
+
+                <div class="m-timeline-2__item-cricle">
+                    <i class="la la-genderless c-main"></i>
+                </div>
+
+                <div class="m-timeline-2__item-text basic-font">
+                    <h4 class="f-w-700 f-s-16" >{{ patch.title }}</h4>
+                    <ng-container *ngIf="patch.description.length > substringLength">
+                        <ng-container *ngTemplateOutlet = "isFullVisibleMap.get(i) ? fullDescription : shortDescription; context: {index: i}"></ng-container>
+                        <span *ngIf="isFullVisibleMap.get(i)" (click)="isFullVisibleMap.set(i, false)" class="m-link clickable">show less</span>
+                        <span *ngIf="!isFullVisibleMap.get(i)" (click)="isFullVisibleMap.set(i, true)" class="m-link clickable">show more</span>
+                    </ng-container>
+
+                    <ng-container *ngIf="patch.description.length <= substringLength">
+                        <markdown [data]="patch.description"></markdown>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</perfect-scrollbar>
+
+<ng-template #noProjectPatchNotes>
+    <div class="row first-row">
+        <div class="col-sm-12">
+            <div class="card card-body m-card-warning f-s-14 f-w-400">
+                <div>Project <span class="bold">{{ project.name }}</span> does not contain any patch notes</div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #shortDescription let-index="index">
+    <markdown [data]="shortDescriptionMap.get(index) + '...'"></markdown>
+</ng-template>
+
+<ng-template #fullDescription let-index="index">
+    <markdown [data]="fullDescriptionMap.get(index)"></markdown>
+</ng-template>

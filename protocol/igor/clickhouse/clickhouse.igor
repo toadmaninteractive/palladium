@@ -1,0 +1,89 @@
+[* json.enabled]
+module ClickhouseProtocol
+{
+    enum DataType
+    {
+        int8;
+        int16;
+        int32;
+        int64;
+        uint8;
+        uint16;
+        uint32;
+        uint64;
+        float32;
+        float64;
+        decimal;
+        decimal32;
+        decimal64;
+        decimal128;
+        string;
+        fixed_string;
+        uuid;
+        date;
+        date_time;
+        enum8;
+        enum16;
+        array;
+        aggregate_function;
+        tuple;
+        special;
+    }
+
+    record EnumPair
+    {
+        string key;
+        int value;
+    }
+
+    [erlang json.parser="clickhouse_types:type_spec_from_json" json.packer="clickhouse_types:type_spec_to_json"]
+    record TypeSpec
+    {
+        string raw_spec = "";
+        DataType data_type = special;
+        bool nullable = false;
+        ?list<EnumPair> enum_items;
+        ?int decimal_precision;
+        ?int decimal_scale;
+        ?int fixed_string_length;
+        ?TypeSpec array_item_type;
+        ?list<TypeSpec> tuple_item_types;
+    }
+
+    record ColumnDef
+    {
+        string name;
+        TypeSpec type;
+    }
+
+    record QueryStatistics
+    {
+        double elapsed;
+        long rows_read;
+        long bytes_read;
+    }
+
+    record QueryResult
+    {
+        list<ColumnDef> meta;
+        list<json> data;
+        long rows;
+        ?long rows_before_limit_at_least;
+        QueryStatistics statistics;
+    }
+
+    [erlang http.client]
+    webservice ClickhouseApi
+    {
+        SendQuery => GET /?database={?string database}&query={string sql_query}
+            ~Authorization: {string basic_auth}
+            ~TE: "trailers"
+            ~X-ClickHouse-Format: "JSON"
+        ->
+            200: QueryResult,
+            400: string as text,
+            403: string as text,
+            404: string as text,
+            500: string as text;
+    }
+}

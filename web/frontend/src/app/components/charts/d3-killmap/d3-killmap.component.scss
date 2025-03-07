@@ -1,0 +1,149 @@
+.d3-section {
+    background-color: #ffffff;
+}
+
+.d3-killmap-chart {
+    width: auto;
+    height: auto;
+    transform: scale(1);
+}
+
+.d3-killmap-over-image {
+    position: relative;
+    top: 0;
+    z-index: 5;
+    display: block;
+    width: 80%;
+    height: 100%;
+}
+
+.d3-killmap-inner-image {
+    position: relative;
+    top: -991px; /* -1156px; */
+    z-index: 4;
+    display: block;
+    width: 80%;
+    height: 0;
+}
+
+.d3-killmap-brush {
+    position: relative;
+    top: -649px; /* -1156px; */
+    z-index: 10;
+    display: block;
+    width: 80%;
+    height: 0;
+}
+
+.d3-tab-button {
+    padding: 0;
+    margin: 0;
+    width: 120px;
+    height: 20px;
+    text-align: center;
+    border: 1px solid #c4c4c4;
+    border-bottom: none;
+    font-size: 11px;
+    background-color: #E5E5E5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    position: relative;
+    z-index: 50;
+
+    &:not(:last-child) {
+        border-right: 0;
+    }
+
+    &.active {
+        font-weight: 500;
+        background-color: #fafafa;
+    }
+}
+
+.d3-tab-button:hover {
+    background-color: #e0e0e0;
+}
+
+.d3-tab-button-group {
+    flex-flow: row nowrap;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
+    float: left;
+    z-index: 10;
+    display: none;
+}
+
+::ng-deep g .x.axis.top path {
+    stroke: #c4c4c4;
+}
+
+::ng-deep g .y.axis.right path {
+    stroke: #c4c4c4;
+}
+
+::ng-deep g .x.axis.bottom path {
+    stroke: #c4c4c4;
+}
+
+::ng-deep g .y.axis.left path {
+    stroke: #c4c4c4;
+}
+
+::ng-deep .axis .tick line {
+    stroke: #0f0f11!important;
+}
+
+.zoom.xy.box {
+    position: relative;
+    z-index: 10;
+}
+
+::ng-deep .d3-killmap-brush .selection {
+    stroke: #0f0f11;
+    stroke-dasharray: 5px;
+    fill: transparent;
+}
+
+::ng-deep .svg-killmap-line {
+    stroke-width: 1.5px;
+    stroke-opacity: 0.4;
+    fill: none;
+}
+
+::ng-deep .svg-killmap-cross {
+    stroke-width: 4px;
+    stroke-opacity: 1;
+    fill: none;
+}
+
+::ng-deep .svg-killmap-cross-air {
+    fill: none;
+    stroke: #585858;
+    stroke-width: 2px;
+    stroke-opacity: 1;
+    stroke-dasharray: 10 10;
+}
+
+.m-card .hint-icon {
+    font-size: 2rem;
+    font-weight: 600;
+    vertical-align: text-bottom;
+}
+
+.mar-r-l {
+    margin-right: 20px !important;
+    margin-left: 20px !important;
+    display: block !important;
+}
+
+.d3-loader {
+    padding: 10px;
+    margin: 10px;
+}
+
+.mat-tab-body.mat-tab-body-active {
+    margin-top: 20px;
+}

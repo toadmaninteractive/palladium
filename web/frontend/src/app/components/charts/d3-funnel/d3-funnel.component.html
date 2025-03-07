@@ -1,0 +1,106 @@
+
+<!-- SUMMARIES -->
+<div #outerContainer class="d3-funnel-chart">
+
+    <div class="d3-summary-field-container">
+        <div class="d3-summary-field-item">
+            <div class="d3-summary-field-title">Total sessions</div>
+            <div *ngIf="formattedData" class="d3-summary-field-count">{{ totalSessions | mNumeric }}</div>
+        </div>
+        <div class="d3-summary-field-item">
+            <div class="d3-summary-field-title">Conversion rate</div>
+            <div *ngIf="formattedData" class="d3-summary-field-count">{{conversionRate + '%'}}</div>
+        </div>
+        <div class="d3-summary-field-item d3-checkbox">
+            <mat-checkbox (click)="toggleRelativePercentages()">Is relative</mat-checkbox>
+        </div>
+    </div>
+
+    <!-- CHART -->
+    <div #graphContainer class="d3-chart-container">
+        <svg #chartContainer [style.width]="'100%'"
+                [style.height]="graphContainerHeight + 'px'">
+            <g class="inner" #inner>
+                <g #xAxis class="axis-bottom-title"></g>
+
+                <defs>
+                    <linearGradient id="areaPathGradient">
+                        <stop class="stop1" offset="0%"></stop>
+                        <stop class="stop2" offset="100%"></stop>
+                    </linearGradient>
+                </defs>
+
+                <g class="d3-funnel-area">
+                    <path
+                        #areaPath
+                        [attr.d]="areaPathD"
+                        [attr.fill]="'url(#areaPathGradient)'"
+                        [attr.transform]="'translate(' + '0,' + this.areaPathTopMargin + ')'">
+                    </path>
+                </g>
+
+                <!-- GRID -->
+                <g class="y-grid-funnel" #yGrid>
+                    <path
+                        *ngFor="let series of formattedData; index as i;"
+                        [attr.d]="getGridPath(series)"
+                        [attr.stroke]="(i > 0 && i < formattedData.length - 1) ? '#000' : 'null'"
+                        [attr.stroke-width]="'1'"
+                        [attr.stroke-dasharray]="'3,3'"
+                        >
+                    </path>
+                </g>
+
+                <g class="segmentTitles">
+                    <ng-container *ngFor="let segment of labelsData; index as i">
+                        <text class="segmentTitle" #segmentTitles
+                                [attr.x]="getTextXColumnPositions(segment, i, formattedData, segmentTitles)"
+                                [attr.y]="segmentTitlePaddings.top">
+                            {{ segment.label }}
+                        </text>
+                    </ng-container>
+                </g>
+
+                <g class="segmentPercentages centeredColumnText">
+                    <ng-container *ngFor="let segment of labelsData; index as i">
+                        <text #percentageText
+                                [attr.x]="getTextXColumnPositions(segment, i, formattedData, percentageText)"
+                                [attr.y]="graphContainerHeight * 0.8"
+                                [style.font-size]="responsiveMode === 'small' || responsiveMode === 'medium' ? responsiveSegmentPercentageFontSize : segmentPercentageFontSize"
+                                [style.font-weight]="segmentPercentageFontWeight">
+                            {{ relativePerc ? segment.relativePercentageOfPrev + '%' : segment.percentageOfTotal + '%' }}
+                        </text>
+                    </ng-container>
+                </g>
+
+                <g class="segmentTotals centeredColumnText">
+                    <ng-container *ngFor="let segment of labelsData; index as i">
+                        <text #segmentTotalsText
+                        [attr.x]="getTextXColumnPositions(segment, i, formattedData, segmentTotalsText)"
+                        [attr.y]="graphContainerHeight * 0.8 + 14"
+                        [attr.fill]="'rgba(0, 0, 0, 0.4)'"
+                        [style.font-size]="segmentTotalFontSize"
+                        [style.font-weight]="segmentTotalFontWeight">
+                        {{ segment.value | mNumeric }}
+                    </text>
+                    </ng-container>
+
+                    <g class="segmentPercentages centeredColumnText">
+                        <ng-container *ngIf="relativePerc">
+                            <ng-container *ngFor="let segment of labelsData; index as i">
+                                <text *ngIf="i > 0" #percentageText
+                                        [attr.x]="getTextXColumnPositions(segment, i, formattedData, percentageText)"
+                                        [attr.y]="graphContainerHeight * 0.8 + 28"
+                                        [attr.fill]="'rgba(0, 0, 0, 0.4)'"
+                                        [style.font-size]="segmentTotalFontSize"
+                                        [style.font-weight]="segmentTotalFontWeight">
+                                    (of {{ formattedData[i - 1].value | mNumeric }})
+                                </text>
+                            </ng-container>
+                        </ng-container>
+                    </g>
+                </g>
+            </g>
+        </svg>
+    </div>
+</div>

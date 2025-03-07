@@ -1,0 +1,16 @@
+.m-multiple-data-content {
+    font-size: 2em;
+    font-weight: bold;
+    font-family: 'Miriam Libre', sans-serif;
+    white-space: nowrap;
+}
+
+.m-multiple-data-description-grey {
+    color: #9699a2;
+    font-size: 1.2em;
+    font-family: 'Miriam Libre', sans-serif;
+}
+
+::ng-deep .mat-list-base .mat-list-item .mat-list-item-content, .mat-list-base .mat-list-option .mat-list-item-content {
+    padding: 0 !important;
+}

@@ -1,0 +1,41 @@
+<div class="dashboard neat-font">
+    <ng-container *ngIf="widgets$ | async else loading">
+        <div class="row">
+            <ng-container *ngFor="let widget of widgets$ | async; index as i ">
+                <div [class]="'widget ' + 'col-lg-' + widget.widthCols + ' col-xl-' + + widget.widthCols">
+                    <m-widget-box
+                        [widgetData]="widget"
+                        [params]="paramsMap.get(widget.key)"
+                        [project]="project.id"
+                        [database]="database"
+                        [uniqId]="i">
+                    </m-widget-box>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+</div>
+
+<ng-template #loading>
+    <div class="chart-loading-wrapper">
+        <div class="chart-loading-container">
+            <div class="loading-box loading-box-1"></div>
+            <div class="loading-box loading-box-2"></div>
+            <div class="loading-box loading-box-3"></div>
+            <div class="loading-box loading-box-4"></div>
+        </div>
+    </div>
+</ng-template>
+
+<!-- D3 basic plot example
+<m-chart-box
+    class="common-plot"
+    [data]="data"
+    [options]="option"
+    [uniqueId]="1">
+    <ng-template>
+        <m-d3-box-plot [data]="data" [options]="option" [uniqueId]="1"></m-d3-box-plot>
+    </ng-template>
+</m-chart-box>
+-->
+

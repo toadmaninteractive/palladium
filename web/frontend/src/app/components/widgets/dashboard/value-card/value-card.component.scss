@@ -1,0 +1,25 @@
+::ng-deep .mat-card-header-text {
+    width: 100%;
+    margin: 0 0 0 0 !important;
+}
+
+.m-datepicker-input {
+    width: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    visibility: hidden;
+}
+
+.m-button-datapicker {
+    font-family: 'Capriola', sans-serif;
+    margin-top: -12px;
+    margin-right: 5px;
+}
+
+.m-card-error {
+    background-color: #FFF0F0;
+    color: #FF0000;
+    border: #FFD6D6 1px solid;
+}

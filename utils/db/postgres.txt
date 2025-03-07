@@ -1,0 +1,5 @@
+Palladium DB Setup AS superuser
+===============================
+
+CREATE ROLE palladium LOGIN password 'palladium_e2e4';
+CREATE DATABASE palladium ENCODING 'UTF8' OWNER palladium;

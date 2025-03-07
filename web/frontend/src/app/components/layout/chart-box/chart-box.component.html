@@ -1,0 +1,37 @@
+<div [ngClass]="userOS + '-os row'">
+    <div class="col">
+        <div class="m-card m-section">
+            <div class="m-card m-section__content">
+                <div #container [ngClass]="onlyFixed ? 'd3-container-fixed' : isExpanded ? 'd3-container-expanded' : 'd3-container-fixed'">
+                    <i
+                        *ngIf="!onlyFixed"
+                        class="la la-arrows-h d3-expand-chart-button"
+                        (click)=onExpandChart()>
+                    </i>
+
+                    <div class="d3-header-container">
+                        <div class="d3-header-item">
+                            <div class="d3-header-title">
+                                {{ (options$ | async)['name'] || (options$ | async)['title'] || '' }}
+                            </div>
+
+                            <div class="d3-chart-description">
+                                <i
+                                    *ngIf="(options$ | async).description"
+                                    matTooltip="{{ (options$ | async).description }}"
+                                    matTooltipClass="basic-font"
+                                    class="la la-info-circle hint-icon dimmed"></i>
+                            </div>
+
+                            <div class="d3-header-subtitle">
+                                {{ (options$ | async).subtitle || '' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <ng-container [ngTemplateOutlet]="contentTemplate"></ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

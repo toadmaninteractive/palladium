@@ -1,0 +1,114 @@
+<div class="m-card m-section">
+    <div class="m-card m-section__content">
+        <mat-card class="m-card m-mat-card">
+            <mat-card-header ngClass="m-card">
+                <mat-card-title class="m-card card-title">
+                    <div style="display: inline-block;"> {{ caption }}</div>
+                    <i *ngIf="tooltipCaption" matTooltip="{{ tooltipCaption }}" class="la la-question-circle hint-icon dimmed more"></i>
+                </mat-card-title>
+
+                <div style="display: table" [ngSwitch]="datepickerDepth">
+                    <div  *ngSwitchCase="'month'" style="display: table-cell">
+                        <input [matDatepicker]="multiYearPicker" class="m-datepicker-input">
+
+                        <button
+                            class="btn m-btn--pill btn-secondary m-btn m-btn--label-primary m-btn--bolder m-button-datapicker"
+                            (click)="multiYearPicker.open()">
+                            {{ selectedDate | date: 'LLL yyyy'}}
+                        </button>
+
+                        <mat-datepicker
+                            #multiYearPicker
+                            startView="multi-year"
+                            (yearSelected)="yearHandler($event)"
+                            (monthSelected)="monthHandler($event, multiYearPicker)">
+                        </mat-datepicker>
+                    </div>
+
+                    <div *ngSwitchCase="'day'">
+                        <input
+                            class="m-datepicker-input"
+                            [matDatepicker]="picker"
+                            (dateChange)="setSelectedDate($event.value)">
+
+                        <button
+                            class="btn m-btn--pill btn-secondary m-btn  m-btn--label-primary m-btn--bolder m-button-datapicker"
+                            (click)="picker.open()">
+                            {{ selectedDate | date: 'mediumDate' }}
+                        </button>
+
+                        <mat-datepicker #picker></mat-datepicker>
+                    </div>
+
+                    <div *ngSwitchCase="'noDatePicker'">
+                        <span class="btn btn-secondary m-btn--pill m-btn--label-primary  m-button-datapicker m-btn-disabled" *ngIf="captionForButton">
+                            {{ captionForButton }}
+                        </span>
+                    </div>
+
+                    <ul class="m-card m-portlet__nav" *ngIf="periods?.length > 0">
+                        <li
+                            class="m-portlet__nav-item m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push"
+                            m-dropdown-toggle="hover">
+                            <a
+                                href="javascript:void(null)"
+                                class="m-portlet__nav-link m-dropdown__toggle dropdown-toggle btn btn--sm m-btn--pill btn-secondary m-btn m-btn--label-brand">
+                                {{ activePeriodLabel }}
+                            </a>
+
+                            <div class="m-dropdown__wrapper">
+                                <span
+                                    class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
+
+                                <div class="m-dropdown__inner">
+                                    <div class="m-dropdown__body">
+                                        <div class="m-dropdown__content">
+                                            <ul class="m-nav">
+                                                <li class="m-nav__item" *ngFor="let item of periods">
+                                                    <a
+                                                        href="javascript:void(null)" class="m-nav__link"
+                                                        (click)="onPeriodChange(item.value)">
+                                                        <span class="m-nav__link-text">{{ item.label }}</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </mat-card-header>
+
+            <mat-card-content *ngIf="!error" [ngSwitch]="value">
+                <m-loading-indicator [isInline]="true" *ngSwitchCase="null"></m-loading-indicator>
+                <ng-container *ngSwitchDefault>
+                    <div style="display: inline-block">
+                        <span class="m-card m-card-content" [ngClass]="styleClass">
+                            {{ value | mNumeric }}
+                        </span>
+
+                        <span *ngIf="description" class="desc-grey">
+                            {{ description }}
+                        </span>
+                    </div>
+                    <div  class="m-card m-card-prev-value"
+                          *ngIf = "(increase !==null && previous)"
+                          [ngClass]="increase < 0 ? 'm--font-danger' : 'm--font-success'"
+                          style="display: inline-block; margin:10px 0 0 5px; width: 100px; line-height: 0.1; vertical-align: top;">
+                            <div><mat-icon style="vertical-align: text-top;" [innerText]="increase < 0 ? 'arrow_drop_down' : 'arrow_drop_up'"></mat-icon>
+                                <span style="margin-left: -10px;">{{ increase | mNumeric }}%</span></div>
+                        <div><span style="color: #9699a2; white-space: nowrap; margin:-10px 0 0 5px;"> <span style="font-size: 0.8rem">vs</span> {{ previous | mNumeric }}</span></div>
+                    </div>
+                </ng-container>
+            </mat-card-content>
+        </mat-card>
+
+        <div *ngIf="error" class="collapse show">
+            <div class="card card-body m-card-error f-s-14 f-w-400">
+                {{ error }}
+            </div>
+        </div>
+    </div>
+</div>

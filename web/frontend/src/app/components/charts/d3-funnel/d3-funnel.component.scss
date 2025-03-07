@@ -1,0 +1,49 @@
+
+.stop1 {
+    stop-color: #FFD363;
+}
+.stop2 {
+    stop-color: #FFC163;
+}
+
+// overwrite the checkbox background
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+    background-color: #34BFA3 !important;
+}
+
+
+
+// OS-SPECIFIC
+::ng-deep .mac-os .mat-checkbox-label {
+    font-size: 12px;
+}
+
+::ng-deep .windows-os .mat-checkbox-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+}
+
+::ng-deep .windows-os .segmentTitle {
+        font-size: 1rem;
+        font-weight: 600;
+}
+
+// RESPONSIVE DESIGN
+@media (max-width: 640px){
+    .segmentTitle{
+        font-size: 20px !important;
+        writing-mode: vertical-lr;
+    }
+}
+
+.widget-subtitle{
+        margin-top: 4px!important;
+        padding-bottom: 10px!important;
+}
+
+.d3-summary-field-container .d3-summary-field-item {
+    padding: 8px!important;
+}
+
+
+

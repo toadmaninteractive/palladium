@@ -1,0 +1,12 @@
+<a href="javascript:void(null);" class="m-nav__section m-nav__dropdown">
+    <mat-select
+        placeholder="Select project"
+        panelClass="m-mat-select-panel"
+        [value]="projectService.activeProject$ | async"
+        (valueChange)="navService.switchProject($event.id)"
+        *ngIf="projectService.projects$ | async">
+            <mat-option *ngFor="let project of projectService.projects$ | async" [value]="project">
+                {{ project.name }}
+            </mat-option>
+    </mat-select>
+</a>

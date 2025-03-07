@@ -1,0 +1,418 @@
+using CommonProtocol;
+using DataProtocol;
+using CardProtocol;
+
+[* json.enabled string.enabled enum_descriptions]
+[ts file="web-protocol.ts"]
+module WebProtocol
+{
+    enum AccessRole
+    {
+        # Consumer
+        consumer;
+
+        # Maintainer
+        maintainer;
+
+        # Administrator
+        admin;
+    }
+
+    // Generic result and response
+    interface IResult
+    {
+        bool result;
+    }
+
+    record GenericResponse: IResult
+    {
+    }
+
+    // PalladiumAuthService -> GetPersonnelStatus
+    record PersonnelStatusResponse
+    {
+        bool logged_in;
+        ?long user_id;
+        ?string email;
+        ?string username;
+    }
+
+    // PalladiumAuthService -> LoginPersonnel
+    record PersonnelLoginRequest
+    {
+        string username;
+        string password;
+    }
+
+    enum PersonnelLoginError
+    {
+        failure;
+        already_logged_in;
+        account_not_exists;
+        account_is_blocked;
+        account_is_deleted;
+        invalid_password;
+    }
+
+    record PersonnelLoginResponse: IResult
+    {
+        ?PersonnelLoginError error;
+        ?string session_id;
+        ?long user_id;
+        ?string email;
+        ?string username;
+    }
+
+    // Personnel account (admin-oriented info)
+    record PersonnelAccount
+    {
+        long id;
+        int rev;
+        string username;
+        ?string name;
+        ?string email;
+        ?string phone;
+        bool is_blocked;
+        bool is_deleted;
+        bool is_superadmin;
+        DateTime created_at;
+        DateTime updated_at;
+    }
+
+    // PalladiumAdminService -> GetPersonnelAccounts
+    enum PersonnelAccountOrderBy
+    {
+        id;
+        username;
+        email;
+        is_blocked;
+        is_deleted;
+        created_at;
+        updated_at;
+    }
+
+    // Personnel account profile (admin-oriented info)
+    record PersonnelAccountProfile
+    {
+        long id;
+        int rev;
+        string username;
+        ?string name;
+        ?string email;
+        ?string phone;
+        bool is_blocked;
+        bool is_deleted;
+        bool is_project_manager;
+        bool is_superadmin;
+        DateTime created_at;
+        DateTime updated_at;
+    }
+
+    // Personnel group (admin-oriented info)
+    record PersonnelGroup
+    {
+        long id;
+        int rev;
+        string name;
+        ?string description;
+        bool is_deleted;
+        list<string> members;
+        int member_count;
+        bool is_superadmin;
+        DateTime created_at;
+        DateTime updated_at;
+    }
+
+    // PalladiumAdminService -> GetPersonnelGroups
+    enum PersonnelGroupOrderBy
+    {
+        id;
+        name;
+        is_deleted;
+        member_count;
+        created_at;
+        updated_at;
+    }
+
+    // Personnel account role (admin-oriented info)
+    record PersonnelAccountRole
+    {
+        long personnel_id;
+        string username;
+        string project_id;
+        string project_title;
+        json project_dbs;
+        ?json group_roles;
+        ?AccessRole user_role;
+        ?bool is_global;
+        ?list<string> dbs;
+    }
+
+    // PalladiumAdminService -> GetPersonnelAccountRoles, GetPersonnelAccountRolesForProject
+    enum PersonnelAccountRoleOrderBy
+    {
+        personnel_id;
+        username;
+        project_id;
+        project_title;
+        user_role;
+    }
+
+    // Personnel group role (admin-oriented info)
+    record PersonnelGroupRole
+    {
+        long group_id;
+        string group_name;
+        string project_id;
+        string project_title;
+        json project_dbs;
+        ?AccessRole group_role;
+        ?bool is_global;
+        ?list<string> dbs;
+    }
+
+    // PalladiumAdminService -> GetPersonnelGroupRoles, GetPersonnelGroupRolesForProject
+    enum PersonnelGroupRoleOrderBy
+    {
+        group_id;
+        group_name;
+        project_id;
+        project_title;
+        group_role;
+    }
+
+    // PalladiumAdminService -> SetPersonnelAccountRole, SetPersonnelGroupRole
+    record AccessRoleUpdateRequest
+    {
+        AccessRole role;
+        ?bool is_global;
+        ?list<string> dbs;
+    }
+
+    // Settings (admin-oriented info)
+    record Settings
+    {
+        int personnel_session_duration;
+    }
+
+    // AdminService -> UpdateSettings
+    record SettingsUpdateRequest
+    {
+        ?int personnel_session_duration;
+    }
+
+    // QueryService -> SendAnalyticsRequest
+    record AnalyticsQueryNodeResult
+    {
+        list<?Series> result;
+    }
+
+    record AnalyticsQueryResult
+    {
+        string query;
+        list<AnalyticsQueryNodeResult> result;
+    }
+
+    // QueryService -> SendWidgetRequest
+    record WidgetQueryResult
+    {
+        string query;
+        AnalyticsQueryNodeResult result;
+    }
+
+    // QueryService -> GetProjects
+    record ProjectConfig
+    {
+        string id;
+        string name;
+        list<string> databases;
+    }
+
+    // QueryService -> GetDashboardData
+    record DashboardData
+    {
+        list<CardQueryParam> params;
+        list<CardWidget> widgets;
+    }
+
+    // QueryService -> GetAnalyticsData
+    record AnalyticsData
+    {
+        list<CardMetric> metrics;
+        list<CardMap> maps;
+        list<CardQueryParam> params;
+        list<CardQuery> queries;
+    }
+
+    // QueryService -> GetEvents
+    record EventData
+    {
+        list<string> super_fields;
+        list<CardEvent> events;
+        list<CardEventGroup> groups;
+    }
+
+    [erlang http.server http.cowboy_req]
+    [csharp http.client]
+    [ts http.client file="web-auth-protocol.service.ts"]
+    webservice PalladiumAuthService
+    {
+        // Get personnel session status
+        [erlang http.handler="rest/generated/web_rest_auth_personnel_status" http.callback="web_rest_callback_personnel"]
+        GetPersonnelStatus => GET /api/auth/personnel/status -> {PersonnelStatusResponse response};
+
+        // Login personnel
+        [erlang http.handler="rest/generated/web_rest_auth_personnel_login" http.callback="web_rest_callback_personnel"]
+        LoginPersonnel => POST /api/auth/personnel/login {PersonnelLoginRequest request} -> {PersonnelLoginResponse response};
+
+        // Logout personnel
+        [erlang http.handler="rest/generated/web_rest_auth_personnel_logout" http.callback="web_rest_callback_personnel"]
+        LogoutPersonnel => PUT /api/auth/personnel/logout {Empty request} -> {GenericResponse response};
+
+        // Get current personnel profile
+        [erlang http.handler="rest/generated/web_rest_auth_personnel_profile" http.callback="web_rest_callback_personnel"]
+        GetMyPersonnelProfile => GET /api/auth/personnel/profile -> {PersonnelAccountProfile response};
+    }
+
+    [erlang http.server]
+    [csharp http.client]
+    [ts http.client file="web-admin-protocol.service.ts"]
+    webservice PalladiumAdminService
+    {
+        // Get single personnel account
+        [erlang http.handler="rest/generated/web_rest_admin_personnel" http.callback="web_rest_callback_admin_personnel"]
+        GetPersonnelAccount => GET /api/admin/personnel/{long id} -> {PersonnelAccount response};
+
+        // Get single personnel account by username
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_username" http.callback="web_rest_callback_admin_personnel"]
+        GetPersonnelAccountByUsername => GET /api/admin/personnel/username/{string username} -> {PersonnelAccount response};
+
+        // Get slice of personnel account collection
+        [erlang http.handler="rest/generated/web_rest_admin_personnels" http.callback="web_rest_callback_admin_personnel"]
+        GetPersonnelAccounts => GET /api/admin/personnels
+            ?needle={?string needle}
+            &order_by={PersonnelAccountOrderBy order_by}
+            &order_dir={OrderDirection order_dir}
+            &offset={int offset}
+            &limit={int limit} -> {CollectionSlice<PersonnelAccount> response};
+
+        // Get slice of personnel account role collection
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_roles" http.callback="web_rest_callback_admin_personnel_roles"]
+        GetPersonnelAccountRoles => GET /api/admin/personnel/{long id}/roles
+            ?needle={?string needle}
+            &order_by={PersonnelAccountRoleOrderBy order_by}
+            &order_dir={OrderDirection order_dir}
+            &offset={int offset}
+            &limit={int limit} -> {CollectionSlice<PersonnelAccountRole> response};
+
+        [erlang http.handler="rest/generated/web_rest_project_roles_account" http.callback="web_rest_callback_admin_personnel_roles"]
+        GetPersonnelAccountRolesForProject => GET /api/projects/{string project}/roles/account
+            ?needle={?string needle}
+            &order_by={PersonnelAccountRoleOrderBy order_by}
+            &order_dir={OrderDirection order_dir}
+            &offset={int offset}
+            &limit={int limit} -> {CollectionSlice<PersonnelAccountRole> response};
+
+        // Set personnel account role
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_role_set" http.callback="web_rest_callback_admin_personnel_roles"]
+        SetPersonnelAccountRole => PUT /api/admin/personnel/{long id}/roles/{string project} {AccessRoleUpdateRequest request} -> {GenericResponse response};
+
+        // Reset personnel account role
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_role_reset" http.callback="web_rest_callback_admin_personnel_roles"]
+        ResetPersonnelAccountRole => DELETE /api/admin/personnel/{long id}/roles/{string project} -> {GenericResponse response};
+
+
+        // Get single personnel group
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_group" http.callback="web_rest_callback_admin_personnel_group"]
+        GetPersonnelGroup => GET /api/admin/personnel-groups/{long id} -> {PersonnelGroup response};
+
+        // Get single personnel group by name
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_group_name" http.callback="web_rest_callback_admin_personnel_group"]
+        GetPersonnelGroupByName => GET /api/admin/personnel-groups/name/{string name} -> {PersonnelGroup response};
+
+        // Get slice of personnel group collection
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_groups" http.callback="web_rest_callback_admin_personnel_group"]
+        GetPersonnelGroups => GET /api/admin/personnel-groups
+            ?needle={?string needle}
+            &order_by={PersonnelGroupOrderBy order_by}
+            &order_dir={OrderDirection order_dir}
+            &offset={int offset}
+            &limit={int limit} -> {CollectionSlice<PersonnelGroup> response};
+
+        // Get slice of personnel group role collection
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_group_roles" http.callback="web_rest_callback_admin_personnel_roles"]
+        GetPersonnelGroupRoles => GET /api/admin/personnel-groups/{long id}/roles
+            ?needle={?string needle}
+            &order_by={PersonnelGroupRoleOrderBy order_by}
+            &order_dir={OrderDirection order_dir}
+            &offset={int offset}
+            &limit={int limit} -> {CollectionSlice<PersonnelGroupRole> response};
+
+        [erlang http.handler="rest/generated/web_rest_project_roles_group" http.callback="web_rest_callback_admin_personnel_roles"]
+        GetPersonnelGroupRolesForProject => GET /api/projects/{string project}/roles/group
+            ?needle={?string needle}
+            &order_by={PersonnelGroupRoleOrderBy order_by}
+            &order_dir={OrderDirection order_dir}
+            &offset={int offset}
+            &limit={int limit} -> {CollectionSlice<PersonnelGroupRole> response};
+
+        // Set personnel group role
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_group_role_set" http.callback="web_rest_callback_admin_personnel_roles"]
+        SetPersonnelGroupRole => PUT /api/admin/personnel-groups/{long id}/roles/{string project} {AccessRoleUpdateRequest request} -> {GenericResponse response};
+
+        // Reset personnel group role
+        [erlang http.handler="rest/generated/web_rest_admin_personnel_group_role_reset" http.callback="web_rest_callback_admin_personnel_roles"]
+        ResetPersonnelGroupRole => DELETE /api/admin/personnel-groups/{long id}/roles/{string project} -> {GenericResponse response};
+
+        // Get settings
+        [erlang http.handler="rest/generated/web_rest_admin_settings" http.callback="web_rest_callback_admin_settings"]
+        GetSettings => GET /api/admin/settings -> {Settings response};
+
+        // Update settings
+        [erlang http.handler="rest/generated/web_rest_admin_settings" http.callback="web_rest_callback_admin_settings"]
+        UpdateSettings => PUT /api/admin/settings {SettingsUpdateRequest request} -> {GenericResponse response};
+    }
+
+    [erlang http.server]
+    [csharp http.client]
+    [ts http.client file="web-query-protocol.service.ts"]
+    webservice PalladiumQueryService
+    {
+        // Projects
+        [erlang http.handler="rest/generated/web_rest_project" http.callback="web_rest_callback_projects" http.cowboy_req]
+        GetProject => GET /api/projects/{string project} -> {ProjectConfig response};
+
+        [erlang http.handler="rest/generated/web_rest_projects" http.callback="web_rest_callback_projects" http.cowboy_req]
+        GetProjects => GET /api/projects -> {Collection<ProjectConfig> response};
+
+        [erlang http.handler="rest/generated/web_rest_project_roles_me" http.callback="web_rest_callback_admin_personnel_roles" http.cowboy_req]
+        GetMyRolesForProject => GET /api/projects/{string project}/roles/me -> {PersonnelAccountRole response};
+
+        // Dashboard
+        [erlang http.handler="rest/generated/web_rest_dashboard_data" http.callback="web_rest_callback_dashboard"]
+        GetDashboardData => GET /api/dashboard/data/{string project} -> {DashboardData response};
+
+        // Widgets
+        [erlang http.handler="rest/generated/web_rest_widget_query" http.callback="web_rest_callback_widgets"]
+        SendWidgetRequest => PUT /api/widgets/query/{string project}/{string database}/{string query} {json request} -> {WidgetQueryResult response};
+
+        // Analytics
+        [erlang http.handler="rest/generated/web_rest_analytics_data" http.callback="web_rest_callback_analytics"]
+        GetAnalyticsData => GET /api/analytics/data/{string project} -> {AnalyticsData response};
+
+        [erlang http.handler="rest/generated/web_rest_analytics_query" http.callback="web_rest_callback_analytics"]
+        SendAnalyticsRequest => PUT /api/analytics/query/{string project}/{string database}/{string query} {json request} -> {AnalyticsQueryResult response};
+
+        // Parameters
+        [erlang http.handler="rest/generated/web_rest_param_values" http.callback="web_rest_callback_parameters"]
+        RetrieveParameterValues => PUT /api/parameters/values/{string project}/{string database}/{string param} {json request} -> {Collection<JsonPoint> response};
+
+        // Events
+        [erlang http.handler="rest/generated/web_rest_events" http.callback="web_rest_callback_events"]
+        GetEvents => GET /api/events/{string project} -> {EventData response};
+
+        // Patch notes
+        [erlang http.handler="rest/generated/web_rest_patch_notes" http.callback="web_rest_callback_patch_notes"]
+        GetPatchNotes => GET /api/patch-notes/{string project} -> {Collection<CardPatchNote> response};
+    }
+}

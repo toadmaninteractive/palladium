@@ -1,0 +1,212 @@
+using CommonProtocol;
+using CardProtocol;
+using VisualizationProtocol;
+
+[* json.enabled string.enabled]
+[schema enabled]
+[ts file="data-protocol.ts"]
+module DataProtocol
+{
+    // Generic collections
+    enum OrderDirection {
+        asc;
+        desc;
+    }
+
+    record Collection<T>
+    {
+        list<T> items;
+    }
+
+    record CollectionSlice<T>
+    {
+        int total;
+        list<T> items;
+    }
+
+    // Primitive types
+    enum PrimitiveType
+    {
+        bool;
+        number;
+        string;
+    }
+
+    // Simple data structures
+    record IntValue
+    {
+        int value;
+    }
+
+    record NumericPoint
+    {
+        string label;
+        double value;
+    }
+
+    record BoxPlotPoint
+    {
+        string label;
+        list<double> value;
+    }
+
+    record ConfidencePoint
+    {
+        string label;
+        double value;
+        double t_value;
+        double std_error;
+    }
+
+    record StringPoint
+    {
+        string label;
+        string value;
+    }
+
+    record DatePoint
+    {
+        Date date;
+        int count;
+    }
+
+    record JsonPoint
+    {
+        string label;
+        json value;
+    }
+
+    record Point2D
+    {
+        double x;
+        double y;
+    }
+
+    record Point3D
+    {
+        double x;
+        double y;
+        double z;
+    }
+
+    record KillPoint
+    {
+        double killer_x;
+        double killer_y;
+        double killer_z = 0;
+        string killer_team;
+        double victim_x;
+        double victim_y;
+        double victim_z = 0;
+        string victim_team;
+        string death_reason;
+        int match_time;
+    }
+
+    record ScatterPoint
+    {
+        string x;
+        string y;
+        double value;
+    }
+
+    // Generic series
+    enum SeriesKind
+    {
+        value = 1;
+        numeric = 2;
+        date = 3;
+        heatmap = 4;
+        killmap = 5;
+        scatter = 6;
+        confidence = 7;
+        box_plot = 8;
+        raw = 9;
+    }
+
+    variant Series
+    {
+        tag SeriesKind kind;
+        ?string key;
+    }
+
+    record Series.NumericValue[value]
+    {
+        NumericPoint data;
+    }
+
+    record Series.BoxPlotSeries[box_plot]
+    {
+        list<BoxPlotPoint> data;
+    }
+
+    record Series.NumericSeries[numeric]
+    {
+        list<NumericPoint> data;
+    }
+
+    record Series.DateSeries[date]
+    {
+        list<DatePoint> data;
+    }
+
+    record Series.HeatmapSeries[heatmap]
+    {
+        list<string> maps = [];
+        list<Point2D> data;
+    }
+
+    record Series.KillmapSeries[killmap]
+    {
+        string map;
+        list<KillPoint> data;
+    }
+
+    record Series.ScatterSeries[scatter]
+    {
+        list<ScatterPoint> data;
+    }
+
+    record Series.ConfidenceSeries[confidence]
+    {
+        list<ConfidencePoint> data;
+    }
+    
+    record Series.RawSeries[raw]
+    {
+        list<json> data;
+    }
+
+    // Time partitioning
+    enum TimePartition {
+        day;
+        week;
+        month;
+        quarter;
+    }
+
+    // Queries
+    interface IKeyName
+    {
+        string name;
+        string key;
+    }
+
+    enum QueryParamType
+    {
+        boolean;
+        numeric;
+        month;
+        date;
+        date_range;
+        time_partition;
+        select;
+    }
+
+    record QueryNode
+    {
+        [schema multiline syntax="sql"]
+        string input_sql;
+        Visualization output;
+    }
+}

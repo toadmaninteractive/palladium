@@ -1,0 +1,178 @@
+using CommonProtocol;
+
+[* json.enabled string.enabled]
+[schema enabled]
+[ts file="visualization-protocol.ts"]
+module VisualizationProtocol
+{
+    enum AxisKindY
+    {
+        primary = 1;
+        secondary = 2;
+    }
+
+    enum AxisValueType
+    {
+        numeric;
+        date;
+        text;
+    }
+
+    enum ChartType
+    {
+        line = 1;
+        spline = 2;
+        area = 3;
+        area_spline = 4;
+        vertical_bar = 5;
+        confidence = 6;
+    }
+
+    interface ISerie
+    {
+        ?string name;
+        ?string key;
+    }
+
+    record SimpleSerie: ISerie
+    {
+    }
+
+    record ChartSerie: ISerie
+    {
+        ?int group_index;
+        ?string color;
+        ChartType chart_type;
+        AxisKindY y_axis = primary;
+        bool show_values = true;
+    }
+
+    record ScatterSerie: ISerie
+    {
+        ?string color;
+        ?double radius;
+    }
+
+    enum VisualizationKind
+    {
+        indicator = 1;
+        common_plot = 2;
+        synchronized_plot = 3;
+        horizontal_bars = 4;
+        funnel = 5;
+        heatmap = 6;
+        killmap = 7;
+        scatter = 8;
+        box_plot = 9;
+        raw = 10;
+    }
+
+    interface ISeries<T>
+    {
+        list<T> series;
+    }
+
+    interface IShowAxis
+    {
+        bool show_x_axis = true;
+        bool show_y_axis = true;
+    }
+    
+    interface IShowGridlines
+    {
+        bool show_x_grid_line = true;
+        bool show_y_grid_line = true;
+    }
+
+    interface IAxisTypes
+    {
+        AxisValueType x_axis_type;
+        AxisValueType y_axis_type;
+    }
+
+    interface IAxisTitles
+    {
+        string x_axis_title = "";
+        string y_axis_title = "";
+    }
+
+    interface ISecondaryAxis
+    {
+        ?string secondary_y_axis_title;
+        ?AxisValueType secondary_y_axis_type;
+    }
+
+    interface IInvertAxis
+    {
+        bool invert_x_axis = false;
+        bool invert_y_axis = false;
+    }
+
+    interface ITimeline
+    {
+        bool show_timeline = false;
+    }
+
+    interface ILegend
+    {
+        bool show_legend = true;
+    }
+
+    interface IZoomable
+    {
+        bool zoom_outside_map = false;
+    }
+
+    variant Visualization
+    {
+        tag VisualizationKind kind;
+        string name;
+        ?string subtitle;
+        [schema multiline]
+        string description;
+    }
+
+    record Visualization.VisualizationIndicator[indicator]
+    {
+        string label;
+    }
+
+    record Visualization.VisualizationCommonPlot[common_plot]: ISeries<ChartSerie>, IShowAxis, IShowGridlines, IAxisTypes, IAxisTitles, ISecondaryAxis, ITimeline, ILegend
+    {
+        bool show_estimate = false;
+    }
+
+    record Visualization.VisualizationSynchronizedPlot[synchronized_plot]: ISeries<ChartSerie>, IShowAxis, IShowGridlines, IAxisTypes, IAxisTitles, ISecondaryAxis, ITimeline, ILegend
+    {
+    }
+
+    record Visualization.VisualizationHorizontalBars[horizontal_bars]: ISeries<SimpleSerie>, IShowAxis, IShowGridlines, IAxisTitles, ILegend
+    {
+    }
+
+    record Visualization.VisualizationFunnel[funnel]: ISeries<SimpleSerie>
+    {
+    }
+
+    record Visualization.VisualizationHeatmap[heatmap]: IInvertAxis, IZoomable
+    {
+    }
+
+    record Visualization.VisualizationKillmap[killmap]: IInvertAxis, IZoomable
+    {
+        ?dict<string, string> team_colors;
+        ?double radius;
+    }
+
+    record Visualization.VisualizationScatter[scatter]: ISeries<ScatterSerie>, IShowAxis, IShowGridlines, IAxisTypes, IAxisTitles, ILegend, IInvertAxis
+    {
+    }
+
+    record Visualization.VisualizationBoxPlot[box_plot]: IShowAxis, IShowGridlines, IAxisTypes, IAxisTitles, ILegend
+    {
+    }
+    
+    record Visualization.VisualizationRaw[raw]
+    {
+    }
+}

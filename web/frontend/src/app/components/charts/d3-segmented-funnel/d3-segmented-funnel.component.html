@@ -1,0 +1,82 @@
+<div #outerContainer class="d3-funnel-chart">
+    <div #graphContainer class="d3-chart-container">
+        <svg #chartContainer [style.width]="'100%'"
+                [style.height]="graphContainerHeight + 'px'">
+            <g class="inner" #inner>
+                <g #xAxis class="axis-bottom-title">
+                </g>
+
+                <!-- GRID -->
+                <g class="y-grid-funnel" #yGrid>
+                    <path
+                    *ngFor="let series of formattedData; index as i;"
+                    [attr.d]="getGridPath(series)">
+                    </path>
+                </g>
+
+                <!-- BARS -->
+                <g class="bars" *ngFor="let series of formattedData; index as indexOne" [attr.transform]=getResponsiveBarPlacement(series)>
+                    <rect *ngFor="let item of series.values; index as indexTwo"
+                            [ngClass]="item.key"
+                            (mouseover)="highlightOnHoverHandler(item.key)"
+                            (mouseleave)="highlightOnLeaveHandler()"
+                            [style.opacity]="item.key === this.highlightedBarKey || !highlightedBarKey ? 1 : 0.3"
+                            [attr.x]="xSubgroupScale(item.key)"
+                            [attr.y]="yScale(item.percentage) === this.graphContainerHeight ? this.graphContainerHeight - 5 : yScale(item.percentage)"
+                            [attr.width]="columnWidth"
+                            [attr.height]="item.percentage === 0 ? 5 : this.graphContainerHeight - this.yScale(item.percentage)"
+                            [attr.fill]="item.color"></rect>
+                </g>
+
+                <!-- TITLES -->
+                <g class="segmentTitles">
+                    <ng-container *ngFor="let series of formattedData; index as i">
+                        <text class="segmentTitle" #segmentTitles
+                                [attr.x]="getTextXColumnPositions(series, i, formattedData, segmentTitles)"
+                                [attr.y]="segmentTitlePaddings.top">
+                            {{ series.label }}
+                        </text>
+                    </ng-container>
+                </g>
+
+                <!-- PERCENTAGES -->
+                <g *ngFor="let series of formattedData" class="funnel-legend">
+                    <ng-container *ngFor="let item of series.values | reverse; index as i">
+                        <rect
+                            [attr.x]="this.xScale(series.label) + (responsiveMode !== 'small' && responsiveMode !== 'medium' ? 11 : 31)"
+                            [attr.y]="getResponsivePercentageCoordinate(series, i) - 36"
+                            [attr.width]="10"
+                            [attr.height]="10"
+                            [attr.fill]="item.color"
+                            [attr.stroke-width]="1"
+                            [attr.stroke]="item.borderColor"
+                            (mouseover)="highlightOnHoverHandler(item.key)"
+                            (mouseleave)="highlightOnLeaveHandler()"
+                            [style.opacity]="item.key === this.highlightedBarKey || !highlightedBarKey ? 1 : 0.3">
+                        </rect>
+                        <text class="f-w-700"
+                            [attr.x]="this.xScale(series.label) + (responsiveMode !== 'small' && responsiveMode !== 'medium' ? 27 : 47)"
+                            [attr.y]="getResponsivePercentageCoordinate(series, i) - 26"
+                            (mouseover)="highlightOnHoverHandler(item.key)"
+                            (mouseleave)="highlightOnLeaveHandler()"
+                            [style.font-size]="12"
+                            [style.opacity]="item.key === this.highlightedBarKey || !highlightedBarKey ? 1 : 0.3">
+                            {{ item.name}} <tspan *ngIf="responsiveMode !== 'small'">{{': ' + (relativePerc ? item.relativePercentage : item.percentage) }}%</tspan>
+                        </text>
+                        <text class="f-w-400"
+                                *ngIf="responsiveMode !== 'small' && responsiveMode !== 'medium'"
+                                [attr.fill]="'#a4a5b6'"
+                                [attr.x]="this.xScale(series.label) + 27"
+                                [attr.y]="getResponsivePercentageCoordinate(series, i) - 14"
+                                (mouseover)="highlightOnHoverHandler(item.key)"
+                                (mouseleave)="highlightOnLeaveHandler()"
+                                [style.font-size]="10"
+                                [style.opacity]="item.key === this.highlightedBarKey || !highlightedBarKey ? 1 : 0.3">
+                            {{ item.value | mNumeric }}
+                        </text>
+                    </ng-container>
+                </g>
+            </g>
+        </svg>
+    </div>
+</div>

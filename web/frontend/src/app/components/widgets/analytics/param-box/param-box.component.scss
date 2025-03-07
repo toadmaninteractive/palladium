@@ -1,0 +1,84 @@
+.m-filter-container {
+    display: inline;
+    position: relative;
+    float: left;
+    margin: 0;
+}
+
+.m-filter-item {
+    margin: 5px 10px 5px 0;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+}
+
+.m-btn-close {
+    position: relative;
+    display: inline-block;
+    float: right;
+    margin-left: 10px;
+    margin-right: -5px;
+}
+
+.m-btn--icon.m-btn--icon-only.btn-sm, .btn-group-sm>.m-btn--icon.m-btn--icon-only.btn {
+    width: 20px;
+    height: 20px;
+}
+
+.m-datepicker-input {
+    width: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    visibility: hidden;
+}
+
+.list-group-item {
+    padding: 5px 10px;
+}
+
+.m-mat-input {
+    display: table;
+    vertical-align: middle;
+    height: 100%;
+}
+
+.m-mat-input input {
+    width: calc(100% - 20px);
+    height: 90%;
+    border: 0;
+    margin: 2px 10px;
+    outline: none;
+    font-family: Arial, sans-serif;
+}
+
+::ng-deep .mat-checkbox-layout {
+    width: calc(100% - 20px);
+    height: 100%;
+    border: 0;
+    margin: 0;
+}
+
+.m-form-control {
+    display: block;
+    width: 100%;
+    height: calc(2.95rem + 2px);
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #495057;
+    // border: 1px solid #ced4da;
+    // border-radius:0 0 .25rem .25rem;
+    background-color: #fff;
+    background-clip: padding-box;
+    // transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.list-item {
+    margin: 0 10px 0 0;
+}
+
+::ng-deep .dynamic-options {
+    .mat-option-text {
+        line-height: 15px;
+    }
+}

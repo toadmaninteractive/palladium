@@ -1,0 +1,80 @@
+.d3-plot {
+    font-style: normal;
+    color: black;
+}
+
+.axis path{
+    stroke: #0f0f11;
+    stroke-dasharray: none !important;
+}
+
+.line path {
+    stroke-width: 2;
+    fill: none;
+    transition: stroke-width 125ms linear,
+                opacity 125ms linear;
+}
+
+.area path {
+    opacity: .3;
+    transition: opacity 125ms linear;
+}
+
+.dot-line {
+    transition: opacity 125ms linear,
+                r 125ms linear;
+}
+
+.dot-hovered {
+    opacity: 0.35 !important;
+    filter: drop-shadow(3px 3px 3px white);
+}
+
+.dot-hovered-inner {
+    opacity: 1;
+    stroke: white;
+    stroke-width: 0.5;
+}
+
+.legend {
+    text-decoration: underline;
+    cursor: pointer;
+    float: right;
+}
+
+.legend-item {
+    display: inline-block;
+}
+
+.legend-icon {
+        height: 12px;
+        width: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+}
+
+.legend-text {
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 14px;
+    text-decoration-line: underline;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.legend-text:hover {
+    opacity: 1 !important;
+}
+
+.block-relative{
+    position: relative;
+}
+
+::ng-deep .tick line{
+    stroke-dasharray: 5 5;
+}

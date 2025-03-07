@@ -1,0 +1,142 @@
+<div class="d3-chart-wrapper">
+    <ng-container *ngIf="drawingSeries.length > 1">
+        <ng-container *ngIf="(options$ | async).showLegend">
+            <div class="d3-legend-wrapper">
+                <div class="d3-legend-container">
+                    <div *ngFor="let series of drawingSeries; index as i" class="d3-legend-item"
+                         (click)="toggleSeries(series.key)">
+                        <span class="d3-legend-icon"
+                              [style.background-color]="legendSeriesMap.has(series.key) ? getColorByKey(series.key) : '#ccc'">
+
+                        </span>
+
+                        <span
+                            class="d3-legend-text"
+                            [style.opacity]="legendSeriesMap.has(series.key)  ? 1 : 0.3">
+                            {{ getSeriesOptions(series.key).name }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </ng-container>
+    <div class="block-relative">
+        <svg #chartContainer
+             [style.width]="'100%'"
+             [style.height]="'285px'">
+
+            <defs>
+                <clipPath [id]="'clip' + uniqueId">
+                    <rect [attr.width]="plotProps.width"
+                          [attr.height]="plotProps.height > 0 ? (plotProps.height - 10) : 0"></rect>
+                </clipPath>
+            </defs>
+
+            <g
+                class="inner" #inner
+                [style.height.px]="(plotProps.height - 10)"
+                [style.width.px]="plotProps.width"
+                [attr.transform]="'translate('+ padding.left + ','+ (padding.top + 10) +')'">
+
+                <g class="tooltip-line" *ngIf="!!(series$ | async) && (series$ | async).length">
+                    <path [attr.d]="drawVerticalLine(tooltipXCoordinate$ | async)"></path>
+                </g>
+
+                <g
+                    class="axis-bottom-title"
+                    [attr.transform]="'translate('+ bottomAxisTranslate + ',' + (plotProps.height + padding.bottom) + ')'">
+                    <!-- 10px - margin between axis label and bottom line -->
+                    <text *ngIf="(options$ | async).xAxisTitle">{{ (options$ | async).xAxisTitle }}</text>
+
+                    <rect
+                        [attr.x]="-50"
+                        [attr.y]="-6"
+                        [attr.fill]="'rgba(0, 0, 0, 0.06)'"
+                        [attr.width]="110"
+                        [attr.height]="6"
+                        [attr.stroke-linecap]="'round'"
+                        [attr.rx]="5"
+                        [attr.ry]="5"
+                        *ngIf="!(options$ | async).xAxisTitle">
+                    </rect>
+                </g>
+
+                <g
+                    class="axis-left-title"
+                    *ngIf="(options$ | async).yAxisTitle"
+                    [attr.transform]="'rotate(-90)  translate('+ (-leftAxisTitleTranslate) +','+ (-maxLabelYPrimaryWidth) +')'">
+                    <text>{{ (options$ | async).yAxisTitle }}</text>
+                </g>
+
+                <g
+                    class="axis-right-title"
+                    *ngIf="(options$ | async).secondaryYAxisTitle"
+                    [attr.transform]="'rotate(90) translate('+ (rightAxisTitleTranslate) +','+ (-(this.plotProps.width + maxLabelYSecondaryWidth)) +')'">
+                    <text>{{ (options$ | async).secondaryYAxisTitle }}</text>
+                </g>
+
+                <g class="axis axis-x-bottom" #axisBottom
+                   [attr.transform]="'translate(0,' + (plotProps.height - 10) + ')'"></g>
+                <g class="axis axis-x-top" #axisTop></g>
+                <g class="x-grid" #xGrid [attr.transform]="'translate(0,' + (plotProps.height - 10) +')'"></g>
+
+                <g class="axis axis-y-left" #axisLeft [attr.transform]="'translate(0, -10)'"></g>
+                <g class="axis axis-y-right" #axisRight [attr.transform]="'translate(' + plotProps.width + ', 0)'"></g>
+                <g class="y-grid" #yGrid></g>
+
+                <g [attr.clip-path]="'url(#clip' + uniqueId + ')'" #plotContainer class="plot">
+                    <rect #zoomContainer
+                          [attr.fill]="'transparent'"
+                          [style.width]="'100%'">
+                    </rect>
+
+                    <g #barsContainer class="bars"></g>
+
+                    <g #linesContainer
+                       [attr.transform]="existBarSeries ? 'translate('+ xPrimaryScale.bandwidth() / 2 +',0)' : 'translate(' + paddingXTypeLine + ',-10)'"
+                       class="lines">
+                    </g>
+                </g>
+            </g>
+        </svg>
+
+        <svg
+            #timecontext
+            [style.width]="'100%'"
+            [style.height]="'90px'"
+            [style.display]="(options$ | async).showTimeline ? 'block' : 'none'">
+            <g class="context" [attr.transform]="'translate('+ padding.left +',0)'">
+                <g class="lines" #timecontextLine></g>
+                <g class="brush" #timecontextBrush></g>
+                <g class="axis" #axisContextBottom [attr.transform]="'translate(0,40)'"></g>
+                <g class="axis" #axisContextLeft></g>
+            </g>
+        </svg>
+
+        <div
+            class="tooltip-container-down" #tooltipContainer
+            *ngIf="drawingSeries.length && existLineSeries"
+            [style.opacity]="(tooltipXCoordinate$ | async) ? '.8' : '0'"
+            [style.top.px]="tooltipPosition.top"
+            [style.left.px]="tooltipPosition.left">
+            <span class="tooltip-header">{{ tooltipHeader }}</span>
+            <ul [innerHTML]="tooltipContent | safe : 'html'"></ul>
+        </div>
+
+        <div
+            class="tooltip-container-bar" #tooltipContainerBar
+            *ngIf="drawingSeries.length && existBarSeries"
+            [style.opacity]="(selectedSeriesKey) ? '.8' : '0'"
+            [style.top.px]="tooltipPosition.top"
+            [style.left.px]="tooltipPosition.left">
+            <span class="tooltip-header">{{ tooltipHeader }}</span>
+            <ul [innerHTML]="tooltipContent | safe : 'html'"></ul>
+        </div>
+
+    </div>
+</div>
+<canvas #measureCanvas style="display: none"></canvas>
+
+<ng-template #loader>
+    <m-loading-indicator [isInline]="true"></m-loading-indicator>
+</ng-template>

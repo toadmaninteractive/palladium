@@ -1,0 +1,201 @@
+<ng-container [ngSwitch]="visualization | VisualizationCheckType">
+    <ng-container *ngSwitchCase="'indicator'">
+        <div [class]="this.userOS + ' widget-kpi-container'">
+            <ng-container [ngTemplateOutlet]="header"></ng-container>
+            <div class="widget-content">
+                <m-kpi-widget *ngIf="(data$ | async)"
+                              [value]="data$ | async"
+                              [unit]="visualization['label']"
+                              [previous]="previousData$ | async"
+                              [params]="params$ | async">
+                </m-kpi-widget>
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-container *ngSwitchDefault>
+        <div [class]="this.userOS + ' widget-chart-container'">
+            <ng-container *ngIf="(data$ | async); else chartLoading">
+                <!-- Header -->
+                <ng-container [ngTemplateOutlet]="header">
+                </ng-container>
+                <div class="widget-subtitle">{{ visualization.subtitle }}</div>
+                <!-- Chart Content -->
+                <div class="widget-content">
+                    <ng-container [ngTemplateOutlet]="chart"></ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+</ng-container>
+
+<!-- --- Template --- -->
+<ng-template #chart>
+    <ng-container [ngSwitch]="visualization | VisualizationCheckType">
+        <ng-container *ngSwitchCase="'commonPlot'">
+            <m-d3-dashboard-plot
+                [style.width]="'100%'"
+                [options]="visualization"
+                [seriesData]="(data$ | async).result.result"
+                [uniqId]="uniqId">
+            </m-d3-dashboard-plot>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'scatter'">
+            <m-d3-scatterplot
+                [maxHeight]="250"
+                [options]="visualization"
+                [seriesData]="(data$ | async).result.result">
+            </m-d3-scatterplot>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'funnel'">
+            <ng-container *ngIf="(data$ | async).result.result.length === 1">
+                <m-d3-funnel
+                    [options]="visualization"
+                    [seriesData]="(data$ | async).result.result">
+                </m-d3-funnel>
+            </ng-container>
+
+            <ng-container *ngIf="(data$ | async).result.result.length > 1">
+                <m-d3-segmented-funnel
+                    [options]="visualization"
+                    [seriesData]="(data$ | async).result.result">
+                </m-d3-segmented-funnel>
+            </ng-container>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'horizontalBars'">
+            <m-d3-horizontal-bars
+                [seriesData]="(data$ | async).result.result"
+                [options]="visualization"
+                [countRows]="10">
+            </m-d3-horizontal-bars>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'synchronized'">
+            <m-d3-synchronized
+                [seriesData]="(data$ | async).result.result"
+                [options]="visualization">
+            </m-d3-synchronized>
+        </ng-container>
+    </ng-container>
+</ng-template>
+
+<ng-template #header>
+    <!-- Widget header -->
+    <div class="widget-header">
+        <div class="widget-title-container">
+            <div class="widget-title">
+                {{ visualization.name }}
+                <!-- TOOLTIP ICON -->
+                <i *ngIf="visualization.description" matTooltip="{{ visualization.description }}"
+                   matTooltipClass="basic-font" class="widget-tooltip la la-info-circle hint-icon dimmed"></i>
+            </div>
+        </div>
+        <!-- Metadata buttons -->
+        <div class="metadata-btns">
+            <ng-container [ngTemplateOutlet]="metadataBtns"></ng-container>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Chart metadata buttons -->
+<ng-template #metadataBtns>
+    <ng-container *ngFor="let param of (params$ | async)">
+        <ng-container [ngSwitch]="param.type">
+            <ng-container *ngSwitchCase="paramTypeEnum.Select">
+                <div class="metadata-container">
+                    <mat-select
+                        disableRipple
+                        class="select-parameter"
+                        [ngModel]="selectedParamValueMap.has(uniqId + '_' + param.key) ? selectedParamValueMap.get(uniqId + '_' + param.key) : null"
+                        (ngModelChange)="selectedParamValueMap.set(uniqId + '_' + param.key, $event); onReload();">
+                        <mat-option
+                            *ngFor="let option of paramDataMap.get(param.key)"
+                            [value]="option.value ? option.value : option">
+                            {{ option.value ? option.value : option }}
+                        </mat-option>
+                    </mat-select>
+                </div>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="paramTypeEnum.DateRange">
+                <div class="metadata-container metadata-button picker" (click)="picker.open()">
+                    <span
+                        [innerHTML]="selectedParamValueMap.get(uniqId + '_' + param.key) | dateRange: 'to-string' | safe: 'html'"></span>
+                    <input [satDatepicker]="picker" style="visibility: hidden; width: 0; height: 0;"
+                           [value]="selectedParamValueMap.get(uniqId + '_' + param.key) | dateRange: 'from-request'"
+                           (dateChange)="onDateChanged(param, $event)">
+                    <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
+                </div>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="paramTypeEnum.Date">
+                <div class="metadata-container">
+                    <input
+                        class="m-datepicker-input"
+                        [matDatepicker]="picker"
+                        [ngModel]="selectedParamValueMap.has(this.uniqId + '_' + param.key) ? selectedParamValueMap.get(this.uniqId + '_' + param.key) : null"
+                        (ngModelChange)="selectedParamValueMap.set(this.uniqId + '_' + param.key,  $event); onReload();">
+
+                    <button class="metadata-button picker"
+                            (click)="picker.open()">
+                        {{ selectedParamValueMap.get(this.uniqId + '_' + param.key) | date: 'mediumDate' }}
+                    </button>
+
+                    <mat-datepicker #picker></mat-datepicker>
+                </div>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="paramTypeEnum.Month">
+                <div class="metadata-container">
+                    <input
+                        class="m-datepicker-input"
+                        [matDatepicker]="multiYearPicker"
+                        [ngModel]="selectedParamValueMap.has(this.uniqId + '_' + param.key) ? selectedParamValueMap.get(this.uniqId + '_' + param.key) : null"
+                        (ngModelChange)="selectedParamValueMap.set(this.uniqId + '_' + param.key,  $event); onReload();">
+
+                    <button class="metadata-button picker"
+                            (click)="multiYearPicker.open()">
+                        {{ selectedParamValueMap.get(this.uniqId + '_' + param.key) | date: 'MMM yyyy' }}
+                    </button>
+
+                    <mat-datepicker
+                        #multiYearPicker
+                        startView="multi-year"
+                        (yearSelected)="yearHandler(param, $event)"
+                        (monthSelected)="monthHandler(param, $event, multiYearPicker)"
+                    ></mat-datepicker>
+                </div>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="paramTypeEnum.TimePartition">
+                <div class="metadata-container time-span-picker picker"
+                     (click)="timeSpanPicker.open()">
+                    <mat-select #timeSpanPicker
+                                [ngModel]="selectedParamValueMap.has(this.uniqId + '_' + param.key) ? selectedParamValueMap.get(this.uniqId + '_' + param.key) : null"
+                                (ngModelChange)="selectedParamValueMap.set(this.uniqId + '_' + param.key,  $event); onReload();">
+                        <mat-option [value]="partitionEnum.Day">Day</mat-option>
+                        <mat-option [value]="partitionEnum.Week">Week</mat-option>
+                        <mat-option [value]="partitionEnum.Month">Month</mat-option>
+                        <mat-option [value]="partitionEnum.Quarter">Quarter</mat-option>
+                    </mat-select>
+                </div>
+            </ng-container>
+        </ng-container>
+
+    </ng-container>
+</ng-template>
+
+<!-- Chart loader -->
+<ng-template #chartLoading>
+    <div class="chart-loading-wrapper">
+        <div class="chart-loading-container">
+            <div class="loading-box loading-box-1"></div>
+            <div class="loading-box loading-box-2"></div>
+            <div class="loading-box loading-box-3"></div>
+            <div class="loading-box loading-box-4"></div>
+        </div>
+    </div>
+</ng-template>

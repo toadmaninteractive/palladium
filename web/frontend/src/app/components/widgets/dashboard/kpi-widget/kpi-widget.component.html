@@ -1,0 +1,46 @@
+<div class="kpi-container">
+    <div class="kpi-value-container" *ngIf="value !== null || undefined; else loader">
+        <!-- KPI VALUE -->
+        <div class="kpi-value">{{value | mNumeric}}</div>
+        <!-- KPI UNIT -->
+        <div class="kpi-value-info-container">{{unit}}</div>
+        <ng-container *ngIf="this.showPrevValue" [ngTemplateOutlet]="changeFromPrev"></ng-container>
+    </div>
+</div>
+
+<ng-template #changeFromPrev>
+    <ng-container *ngIf="changeInPercentage !== null || undefined ">
+        <div class="rel-unit-container">
+            <ng-container *ngIf="changeInPercentage > 0">
+                <div class="caret-value caret-value-positive" *ngIf="!!previous">
+                    <div class="arrow-up"></div>
+                    <span>{{changeInPercentage}}%</span>
+                </div>
+                <div class="prev-value">vs {{previous}}</div>
+            </ng-container>
+
+            <ng-container *ngIf="changeInPercentage < 0">
+                <div class="caret-value caret-value-negative" *ngIf="!!previous">
+                    <div class="arrow-down"></div>
+                    <span>{{getPercentageAsAbsoluteNumber(changeInPercentage)}}%</span>
+                </div>
+                <div class="prev-value">vs {{previous}}</div>
+            </ng-container>
+
+            <ng-container *ngIf="changeInPercentage === 0">
+                <div class="caret-value caret-value-zero">
+                    <hr style="margin: 0 0 5px 0;">
+                </div>
+                <div class="prev-value">vs {{previous}}</div>
+            </ng-container>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #loader>
+    <div class="loading-container">
+        <div class="loading-dot loading-dot-1"></div>
+        <div class="loading-dot loading-dot-2"></div>
+        <div class="loading-dot loading-dot-3"></div>
+    </div>
+</ng-template>

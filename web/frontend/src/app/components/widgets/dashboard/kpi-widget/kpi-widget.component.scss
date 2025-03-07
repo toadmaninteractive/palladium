@@ -1,0 +1,135 @@
+.kpi-container {
+    font-style: normal;
+    color: black;
+
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    align-content: center;
+
+    .kpi-value-container {
+        display: flex;
+        align-items: flex-end;
+        height: 100%;
+        width: 100%;
+
+        .kpi-value {
+            justify-self: flex-start;
+            font-size: 33px;
+            font-weight: bold;
+            color: #6BCAFF;
+            line-height: 90%;
+        }
+
+        .kpi-value-info-container {
+            margin-left: 4px;
+            color: #c4c4c4;
+            font-weight: 500;
+        }
+    }
+}
+
+.rel-unit-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    margin-bottom: 2px;
+    align-self: flex-end;
+    //margin-left: auto;
+
+    justify-content: flex-start;
+    align-content: center;
+    font-size: 11px;
+    .caret-value {
+        line-height: 10px;
+        margin-bottom: 3px;
+
+        span {
+            font-weight: 700;
+        }
+
+        .arrow-up {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin-right: 3px;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 8px solid #34bfa3;
+          }
+        .arrow-down {
+            @extend .arrow-up;
+            border-bottom: none;
+            border-top: 8px solid #FF7D85;
+          }
+
+        &-negative {
+            color: #FF7D85;
+        }
+
+        &-positive {
+            color: #34bfa3;
+        }
+
+        &-zero {
+            color: #C4C4C4;
+        }
+    }
+
+    .prev-value {
+        line-height: 10px;
+        color: #c4c4c4;
+        font-weight: 700;
+
+    }
+}
+
+// LOADING
+$oscillationTime: 2000ms;
+$delay: 100ms;
+
+.loading-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    .loading-dot {
+        height: 17px;
+        width: 17px;
+        border-radius: 50%;
+        margin-right: 3px;
+        background-color: #d7d7d7;
+    }
+
+    .loading-dot-1 {
+        animation: loadingAnimation $oscillationTime ease $delay * 1 infinite;
+    }
+    .loading-dot-2 {
+        animation: loadingAnimation $oscillationTime ease $delay * 2 infinite;
+    }
+    .loading-dot-3 {
+        animation: loadingAnimation $oscillationTime ease $delay * 3 infinite;
+    }
+}
+
+@keyframes loadingAnimation {
+    from {
+        opacity: 1;
+    }
+    20% {
+        opacity: 0;
+    }
+    40% {
+        opacity: 0;
+    }
+    60% {
+        opacity: 1;
+    }
+    to {
+        opacity: 1;
+    }
+}

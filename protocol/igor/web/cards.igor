@@ -1,0 +1,168 @@
+using CommonProtocol;
+using DataProtocol;
+
+[* json.enabled]
+[schema enabled]
+[ts file="card-protocol.ts"]
+[erlang catalogue.file="cards" catalogue.multi_db]
+module CardProtocol
+{
+    enum CardCategory
+    {
+        config;
+        metric;
+        map;
+        query_param;
+        query;
+        event;
+        event_group;
+        patch_note;
+        widget;
+    }
+
+    // Card category keys
+    [schema editor=key]
+    [erlang alias="catalogue:key"]
+    [ts alias="string" json.serializer="Igor.Json.String"]
+    define Key atom;
+
+    [schema category="config"]
+    define ConfigKey Key;
+
+    [schema category="metric"]
+    define MetricKey Key;
+
+    [schema category="map"]
+    define MapKey Key;
+
+    [schema category="query_param"]
+    define QueryParamKey Key;
+
+    [schema category="query"]
+    define QueryKey Key;
+
+    [schema category="event"]
+    define EventKey Key;
+
+    [schema category="event_group"]
+    define EventGroupKey Key;
+
+    [schema category="patch_note"]
+    define PatchNoteKey Key;
+
+    [schema category="widget"]
+    define WidgetKey Key;
+
+    [schema root]
+    [erlang catalogue.enabled]
+    variant Card
+    {
+        tag CardCategory category;
+        [* json.key="_id"]
+        [schema ignore]
+        atom id;
+    }
+
+    enum ClickhouseServer
+    {
+        # https://clickhouse.yourcompany.com:8443/
+        default;
+    }
+
+    [erlang catalogue.enabled singleton.file="card_config" singleton.name="config"]
+    record Card.CardConfig[config]
+    {
+        string project_name;
+        list<string> databases;
+        ClickhouseServer clickhouse_server = default;
+        list<WidgetKey> dashboard_widgets = [];
+        list<MetricKey> metrics = [];
+        list<MapKey> maps = [];
+        list<QueryParamKey> parameters = [];
+        list<QueryKey> queries = [];
+        list<string> event_super_fields;
+        list<EventGroupKey> event_groups = [];
+        list<PatchNoteKey> patch_notes = [];
+    }
+
+    [erlang catalogue.enabled]
+    record Card.CardMetric[metric]
+    {
+        string name;
+    }
+
+    [erlang catalogue.enabled]
+    record Card.CardMap[map]
+    {
+        string name;
+        string key;
+        string url;
+        double min_x;
+        double min_y;
+        double max_x;
+        double max_y;
+    }
+
+    [erlang catalogue.enabled]
+    record Card.CardQueryParam[query_param]: IKeyName
+    {
+        QueryParamType type;
+        [schema multiline syntax="sql"]
+        ?string input_sql;
+        ?PrimitiveType value_type;
+        ?list<StringPoint> values;
+        ?list<QueryParamKey> depends_on;
+    }
+
+    [erlang catalogue.enabled]
+    record Card.CardQuery[query]: IKeyName
+    {
+        [schema multiline]
+        string description;
+        list<MetricKey> metrics = [];
+        list<QueryParamKey> params = [];
+        list<QueryParamKey> required_params = [];
+        list<QueryNode> nodes = [];
+    }
+
+    [erlang catalogue.enabled]
+    record Card.CardEvent[event]
+    {
+        string name;
+        string description;
+        DateTime added_at;
+        bool is_implemented;
+        bool is_tested;
+        ?bool is_activated;
+        list<string> fields = [];
+    }
+
+    [erlang catalogue.enabled]
+    record Card.CardEventGroup[event_group]
+    {
+        string name;
+        string description;
+        list<EventKey> events = [];
+    }
+
+    [erlang catalogue.enabled]
+    record Card.CardPatchNote[patch_note]
+    {
+        string title;
+        [schema multiline]
+        string description;
+        DateTime added_at;
+        ?int analytics_version;
+        ?int build_revision;
+    }
+
+    [erlang catalogue.enabled]
+    record Card.CardWidget[widget]
+    {
+        string key;
+        [schema min=1 max=12]
+        int width_cols = 3;
+        list<QueryParamKey> params = [];
+        QueryNode query;
+    }
+}

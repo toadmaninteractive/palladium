@@ -1,0 +1,68 @@
+.error-container-fixed {
+    width: 900px;
+    box-sizing: border-box;
+    height: 40vh;
+    background-color: white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .error-wrapper {
+        padding: 10%;
+        flex: 0 1;
+        width: max-content;
+        text-align: center;
+
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.error-container-expanded {
+    @extend .error-container-fixed;
+    width: 100%;
+}
+
+h1,
+h2 {
+    flex: 0 1;
+    width: max-content;
+}
+
+h1 {
+    font-size: 56px;
+    font-weight: 900;
+}
+h2 {
+    font-size: 30px;
+    font-weight: 900;
+}
+
+h1.no-data,
+h2.no-data {
+    background-image: -webkit-repeating-linear-gradient(135deg, rgba(244, 81, 108, 1), rgba(244, 81, 108, 1) 1px, transparent 2px, transparent 2px, rgba(244, 81, 108, 1) 3px);
+    background-image: -moz-repeating-linear-gradient(135deg, rgba(244, 81, 108, 1), rgba(244, 81, 108, 1) 1px, transparent 2px, transparent 2px, rgba(244, 81, 108, 1) 3px);
+    background-image: -o-repeating-linear-gradient(135deg, rgba(244, 81, 108, 1), rgba(244, 81, 108, 1) 1px, transparent 2px, transparent 2px, rgba(244, 81, 108, 1) 3px);
+    background-image: repeating-linear-gradient(135deg, rgba(244, 81, 108, 1), rgba(244, 81, 108, 1) 1px, transparent 2px, transparent 2px, rgba(244, 81, 108, 1) 3px);
+    -webkit-background-size: 4px 4px;
+    -moz-background-size: 4px 4px;
+    background-size: 4px 4px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h1.no-map-selected,
+h2.no-map-selected {
+    background-image: -webkit-repeating-linear-gradient(135deg, rgba(52, 191, 162, 1), rgba(52, 191, 162, 1) 1px, transparent 2px, transparent 2px, rgba(52, 191, 162, 1) 3px);
+    background-image: -moz-repeating-linear-gradient(135deg, rgba(52, 191, 162, 1), rgba(52, 191, 162, 1) 1px, transparent 2px, transparent 2px, rgba(52, 191, 162, 1) 3px);
+    background-image: -o-repeating-linear-gradient(135deg, rgba(52, 191, 162, 1), rgba(52, 191, 162, 1) 1px, transparent 2px, transparent 2px, rgba(52, 191, 162, 1) 3px);
+    background-image: repeating-linear-gradient(135deg, rgba(52, 191, 162, 1), rgba(52, 191, 162, 1) 1px, transparent 2px, transparent 2px, rgba(52, 191, 162, 1) 3px);
+    -webkit-background-size: 4px 4px;
+    -moz-background-size: 4px 4px;
+    background-size: 4px 4px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

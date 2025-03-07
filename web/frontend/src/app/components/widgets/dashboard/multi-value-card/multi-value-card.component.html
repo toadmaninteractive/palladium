@@ -1,0 +1,51 @@
+<div class="m-card m-section">
+    <div class="m-card m-section__content">
+        <mat-card class="m-card m-mat-card">
+            <mat-card-header>
+                <mat-card-title class="m-card card-title">
+                    <div style="display: inline-block;">{{ caption }}</div>
+                    <i *ngIf="tooltipCaption" matTooltip="{{ tooltipCaption }}" class="la la-question-circle hint-icon dimmed more"></i>
+                </mat-card-title>
+
+                <div style="display: table">
+                    <div style="display: table-cell" *ngIf="captionForButton">
+                        <span class="btn btn-secondary m-btn--pill m-btn--label-primary  m-button-datapicker m-btn-disabled">
+                            {{ captionForButton }}
+                        </span>
+                    </div>
+                    <div style="display: table-cell">
+                        <i class="la la-refresh hint-icon dimmed more" style="cursor: pointer" (click)="onReload()"></i>
+                    </div>
+                </div>
+            </mat-card-header>
+
+            <mat-card-content [ngSwitch]="items">
+                <m-loading-indicator [isInline]="true" *ngSwitchCase="null"></m-loading-indicator>
+                <ng-container *ngSwitchDefault>
+                    <!--<mat-list>
+                        <mat-list-item *ngFor="let item of items; let i = index">
+                            <p matLine>
+                                <span class="m-multiple-data-description-grey">{{ item.label }}</span>
+                            </p>
+                            <p matLine>
+                            <span class="m-card m-multiple-data-content"
+                                  [ngClass]="colorStyleClass[i % colorStyleClass.length]">
+                                {{ item.value | mNumeric }}
+                            </span>
+                            </p>
+                        </mat-list-item>
+                    </mat-list>-->
+                    <div class="row" style="margin-top: 20px;">
+                        <div *ngFor="let item of items; let i = index" class="col">
+                            <span class="m-multiple-data-description-grey">{{ item.label }}</span>
+                            <span class="m-card m-multiple-data-content"
+                                  [ngClass]="colorStyleClass[i % colorStyleClass.length]">
+                                    {{ item.value | mNumeric }}
+                            </span>
+                        </div>
+                    </div>
+                </ng-container>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

@@ -1,0 +1,99 @@
+.d3-section {
+    background-color: #ffffff;
+}
+
+.heatmap-over-image {
+    position: relative;
+    top: 0;
+    z-index: 5;
+    display: block;
+    width: 80%;
+    height: 100%;
+}
+
+.heatmap-inner-image {
+    position: relative;
+    top: -1071px; /* -1156px; */
+    z-index: 4;
+    display: block;
+    width: 80%;
+    height: 0;
+}
+
+.d3-heatmap-brush {
+    position: relative;
+    top: -649px; /* -1156px; */
+    z-index: 10;
+    display: block;
+    width: 80%;
+    height: 0;
+}
+
+.zoom.xy.box {
+    z-index: 10;
+}
+
+.cssload-box-loading {
+    position: relative !important;
+}
+
+.d3-legend {
+    fill: none;
+    stroke: #000000;
+    stroke-width: 2px;
+}
+
+::ng-deep .d3-heatmap-brush .selection {
+    stroke: #0f0f11;
+    stroke-dasharray: 5px;
+    fill: transparent;
+}
+
+::ng-deep g .x.axis.top path {
+    stroke: #c4c4c4;
+}
+
+::ng-deep g .y.axis.right path {
+    stroke: #c4c4c4;
+}
+::ng-deep g .x.axis.bottom path {
+    stroke: #c4c4c4;
+}
+::ng-deep g .y.axis.left path {
+    stroke: #c4c4c4;
+}
+
+::ng-deep .axis .tick line {
+    stroke: #0f0f11!important;
+}
+
+::ng-deep .svg-killmap-cross-air {
+    fill: none;
+    stroke: #585858;
+    stroke-width: 2px;
+    stroke-opacity: 1;
+    stroke-dasharray: 10 10;
+}
+
+.dimmed.more {
+    opacity: 0.15;
+    font-size: 1.4em;
+    vertical-align: text-bottom;
+}
+
+.mar-r-l {
+    margin-right: 20px!important;
+    margin-left: 20px!important;
+    display: block!important;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.d3-loader {
+    padding: 10px;
+    margin: 10px;
+}
+
+.mat-tab-body.mat-tab-body-active {
+    margin-top: 20px;
+}

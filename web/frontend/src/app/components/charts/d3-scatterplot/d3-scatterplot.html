@@ -1,0 +1,60 @@
+<div class="d3-chart-wrapper">
+    <ng-container *ngIf="drawingSeries.length > 1">
+        <ng-container *ngIf="(options$ | async).showLegend">
+            <div class="d3-legend-wrapper">
+                <div class="d3-legend-container">
+                    <div *ngFor="let series of pristineOptionsScatter.series; index as i" class="d3-legend-item"
+                         (click)="toggleSeries(series.key)">
+                        <span class="d3-legend-icon"
+                              [style.background-color]="legendSeriesMap.has(series.key) ? getColorByKey(series.key) : '#ccc'"></span>
+                        <span
+                            class="d3-legend-text"
+                            [style.opacity]="legendSeriesMap.has(series.key) ? 1 : 0.3"><!--
+                            -->{{ series.name }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </ng-container>
+
+    <svg #chartContainer
+         [style.width]="'100%'"
+         [style.height.px]="plotProps.height + padding.top + padding.bottom">
+
+        <g class="inner" #inner
+           [style.height.px]="plotProps.height"
+           [style.width.px]="plotProps.width"
+           [attr.transform]="'translate('+ padding.left + ','+ padding.top +')'">
+
+            <g class="axis-bottom-title"
+               *ngIf="(options$ | async).xAxisTitle"
+               [attr.transform]="'translate('+ bottomAxisTranslate + ',' + (plotProps.height + padding.bottom -5) + ')'"
+               [style.font-weight]="'bold'">
+                <text>{{ (options$ | async).xAxisTitle }}</text>
+            </g>
+
+            <g class="axis-left-title"
+               *ngIf="(options$ | async).yAxisTitle"
+               [attr.transform]="'rotate(-90)  translate('+ (-leftAxisTitleTranslateX) +','+ (-padding.left + 15) + ')'">
+                <text [style.font-weight]="'bold'">{{ (options$ | async).yAxisTitle }}</text>
+            </g>
+
+            <g class="axis axis-x-bottom" #axisBottom
+               [attr.transform]="'translate(0,' + plotProps.height + ')'"></g>
+            <g class="axis axis-x-top" #axisTop></g>
+            <g class="x-grid" #xGrid [attr.transform]="'translate(0,' + plotProps.height +')'"></g>
+
+            <g class="axis axis-y-left" #axisLeft></g>
+            <g class="axis axis-y-right" #axisRight
+               [attr.transform]="'translate(' + plotProps.width + ', 0)'"></g>
+            <g class="y-grid" #yGrid></g>
+            <g class="data" #data></g>
+        </g>
+    </svg>
+    <span class="d3-chart-description">
+        Info: Hold S for selection.
+    </span>
+</div>
+
+<canvas #measureCanvas style="display: none"></canvas>

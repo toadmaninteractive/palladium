@@ -1,0 +1,31 @@
+// RESPONSIVE DESIGN
+
+// 1500 width
+@media (max-width: 1200px){
+    .segmentTitle{
+        font-size: 20px !important;
+        writing-mode: vertical-lr;
+    }
+}
+
+rect{
+    transition: opacity 150ms ease-in-out;
+    cursor: pointer;
+}
+
+.funnel-legend {
+
+    text {
+        transition: opacity 150ms ease-in-out;
+        cursor: pointer;
+    }
+}
+::ng-deep .windows-os .mat-checkbox-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+}
+
+::ng-deep .windows-os .segmentTitle {
+        font-size: 1rem;
+        font-weight: 600;
+}

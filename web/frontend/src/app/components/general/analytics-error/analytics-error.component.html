@@ -1,0 +1,26 @@
+
+<ng-container [ngSwitch]="currentErrorType">
+    <ng-container *ngSwitchCase="ErrorTypes.ValuesAreZero">
+        <div [ngClass]="chartBoxExpansionService.isExpanded ? 'error-container-expanded' : 'error-container-fixed'">
+            <div class="error-wrapper">
+                <h1 class="no-data">NO DATA FOUND</h1>
+                <h2 class="no-data">USING CURRENT FILTERS</h2>
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="ErrorTypes.MapIsNotSelected">
+        <div [ngClass]="chartBoxExpansionService.isExpanded ? 'error-container-expanded' : 'error-container-fixed'">
+            <div class="error-wrapper">
+                <h1 class="no-map-selected">NO MAP SELECTED</h1>
+                <h2 class="no-map-selected">PLEASE SELECT A MAP</h2>
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-container *ngSwitchDefault >
+        <div class="card card-body m-card-error f-s-14 f-w-400">
+            {{ errorMessage }}
+        </div>
+    </ng-container>
+</ng-container>

@@ -1,0 +1,12 @@
+<a href="javascript:void(null);" class="m-nav__section m-nav__dropdown">
+    <mat-select
+        placeholder="Select database"
+        panelClass="m-mat-select-panel"
+        [value]="(projectService.activeDatabase$ | async)"
+        (valueChange)="navService.switchDatabase($event)"
+        *ngIf="(projectService.activeProject$ | async)?.databases">
+            <mat-option *ngFor="let db of (projectService.activeProject$ | async)?.databases" [value]="db">
+                {{ db }}
+            </mat-option>
+    </mat-select>
+</a>

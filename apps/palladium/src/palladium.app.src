@@ -1,0 +1,7 @@
+{application, palladium, [
+    {description, "Palladium Server"},
+    {vsn, "0.1.0"},
+    {modules, []},
+    {registered, []},
+    {applications, [sasl, web]}
+]}.

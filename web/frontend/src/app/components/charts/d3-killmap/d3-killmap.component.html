@@ -1,0 +1,104 @@
+<div class="d3-section" [style.width.px]="width + 40">
+    <ng-container *ngIf="{ data: data$ | async, type: killmapType$ | async } as x">
+        <div class="d3-loader" #loader>
+            <m-loading-indicator [isInline]="true"></m-loading-indicator>
+        </div>
+
+        <div *ngIf="x.data; else noMapError">
+            <div class="d3-killmap-chart">
+                <div class="d3-tab-button-group d3-font">
+                    <div
+                        class="d3-tab-button clickable"
+                        [class.active]="x.type === killmapEnum.All"
+                        (click)="changeMode(killmapEnum.All, x.type)">
+                        Killers and Victims
+                    </div>
+
+                    <div
+                        class="d3-tab-button clickable"
+                        [class.active]="x.type === killmapEnum.Killers"
+                        (click)="changeMode(killmapEnum.Killers, x.type)">
+                        Killers
+                    </div>
+
+                    <div
+                        class="d3-tab-button clickable"
+                        [class.active]="x.type === killmapEnum.Victims"
+                        (click)="changeMode(killmapEnum.Victims, x.type)">
+                        Victims
+                    </div>
+
+                    <div
+                        class="d3-tab-button clickable"
+                        [class.active]="x.type === killmapEnum.Suicide"
+                        (click)="changeMode(killmapEnum.Suicide, x.type)">
+                        Suicide
+                    </div>
+                </div>
+
+                <div class="d3-killmap-over-image">
+                    <svg
+                        [attr.width]="(width + 128) + 'px'"
+                        [attr.height]="height + 'px'"
+                        [attr.id]="'axissvg'"
+                        (mousemove)="showTooltip($event)"
+                        (mouseleave)="hideTooltip()">
+                        <g class="d3KillMapZoomableOf"></g>
+                    </svg>
+                </div>
+
+                <div class="d3-killmap-inner-image">
+                    <svg
+                        #svg
+                        class="d3KillMapImage"
+                        [attr.width]="width + 'px'"
+                        [attr.height]="height + 'px'"
+                        [attr.preserveAspectRatio]="'none'">
+                        <defs>
+                            <filter [attr.id]="'blurMe'">
+                                <feGaussianBlur [attr.in]="'SourceGraphic'" [attr.stdDeviation]="'4'" />
+                            </filter>
+
+                            <pattern
+                                [attr.id]="'img1'"
+                                [attr.patternUnits]="'userSpaceOnUse'"
+                                [attr.width]="'100%'"
+                                [attr.height]="'100%'">
+                                <image
+                                    [attr.xlink:href]="url"
+                                    [attr.x]="'0'"
+                                    [attr.y]="'0'"
+                                    [attr.width]="'100%'"
+                                    [attr.height]="'100%'" />
+                            </pattern>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="d3-killmap-brush">
+                    <svg
+                        #svgbrush
+                        class="d3brushmapimage"
+                        [attr.width]="width + 'px'"
+                        [attr.height]="height + 'px'"
+                        [attr.preserveAspectRatio]="'none'">
+                        <g [attr.id]="'layoutbrush'"></g>
+                    </svg>
+                </div>
+            </div>
+
+            <span class="d3-chart-description mt-2">
+                Info: <strong class="f-w-600">SHIFT + SCROLL</strong> to zoom.
+                Hold <strong class="f-w-600">CTRL</strong> for coordinates.
+                Hold <strong class="f-w-600">S</strong> for selection.
+                <strong class="f-w-600">ESC</strong> to exit selection mode.
+            </span>
+        </div>
+    </ng-container>
+</div>
+
+<ng-template #noMapError>
+    <div class="m-card-error f-s-14 f-w-400 mar-r-l" *ngIf="{ options: options$ | async } as x">
+        Map options are not set for <strong>{{ x.options?.name }}</strong>
+    </div>
+</ng-template>

@@ -1,0 +1,3 @@
+-define(db_app, db).
+-define(pool_postgres, postgres).
+-define(pool_clickhouse, clickhouse).

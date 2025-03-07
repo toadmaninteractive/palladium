@@ -1,0 +1,456 @@
+$borderColor: #C4C4C4;
+$containerPadding: 34px;
+
+// CONTAINERS
+.d3-container-fixed {
+    width: 900px;
+    position: relative;
+    padding: $containerPadding;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    border-radius: 2px;
+    background-color: white;
+    font-family:
+        -apple-system,
+        "Lucida Grande",
+        Ubuntu sans-serif,
+        Oxygen-Sans,
+        Cantarell,
+        "Helvetica Neue",
+        sans-serif !important;
+    font-style: normal;
+    color: black;
+
+    // Transition needs to be shorter than chart box animation time
+    transition: width 500ms cubic-bezier(.87, .27, .21, .99);
+}
+
+.d3-container-expanded {
+    @extend .d3-container-fixed;
+    width: 100%;
+}
+
+.d3-chart-container {
+    border: 1px solid $borderColor;
+}
+
+.d3-header-container {
+    display: flex;
+    margin: 0 0 22px 0;
+    max-height: 70px;
+
+    .d3-header-item {
+        &:first-child {
+            flex: 1 0 400px;
+        }
+
+        .d3-header-title {
+            display: inline-block;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 15px;
+        }
+
+        .d3-header-subtitle {
+            font-size: 12px;
+            font-weight: normal;
+            line-height: 12px;
+            margin-top: 9px;
+        }
+    }
+}
+
+.d3-summary-field-container {
+    border: 1px solid $borderColor;
+    display: flex;
+    width: 100%;
+
+    .d3-summary-field-item:not(:first-child) {
+        margin-left: 30px;
+    }
+
+    .d3-summary-field-item {
+        padding: 12px;
+
+        .summary-field-title {
+            font-weight: normal;
+            font-size: 10px;
+            line-height: 16px;
+            color: #8C8C8C;
+        }
+
+        .d3-summary-field-count {
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 25px;
+        }
+
+        &.d3-checkbox {
+            margin: 0 12px 0 auto;
+            align-self: center;
+        }
+    }
+}
+
+// Expand chart button
+.d3-expand-chart-button {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    cursor: pointer;
+    color: #C4C4C4;
+
+    &:hover {
+        transform: scale(1.2);
+    }
+
+    &:active {
+        animation: bounce 30ms linear 0s 3;
+    }
+}
+
+@keyframes bounce {
+    0% {
+        transform: scale(1.2);
+    }
+    50% {
+        transform: scale(.8);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+// Chart legends
+.d3-chart-wrapper {
+    position: relative;
+}
+
+.d3-legend-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: -33px;
+}
+
+.d3-legend-container {
+    height: 100%;
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.d3-legend-item {
+    display: inline-block;
+
+    font-family:
+        -apple-system,
+        "Lucida Grande",
+        Ubuntu sans-serif,
+        Roboto,
+        Oxygen-Sans,
+        Ubuntu,
+        Cantarell,
+        "Helvetica Neue",
+        sans-serif !important;
+
+    &:not(:last-child) {
+        margin-right: 29px;
+    }
+}
+
+.d3-legend-icon {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.d3-legend-text {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 14px;
+    text-decoration-line: underline;
+    cursor: pointer;
+    vertical-align: text-top;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+// Tooltip
+.tooltip-container {
+    transition: left 150ms linear,
+    top 150ms linear;
+    box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, .5);
+}
+
+.tooltip-container:after, .tooltip-container:before {
+    right: 100%;
+    top: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.tooltip-container:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-right-color: #ffffff;
+    border-width: 6px;
+    margin-top: -6px;
+}
+
+.tooltip-container:before {
+    border-color: rgba(149, 226, 245, 0);
+    border-right-color: #979797;
+    border-width: 8px;
+    margin-top: -8px;
+}
+
+.tooltip-container, .tooltip-container-arrow-right {
+    position: fixed;
+    min-width: 1px;
+    min-height: 1px;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.tooltip-container-arrow-right:after, .tooltip-container-arrow-right:before {
+    left: 100%;
+    top: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.tooltip-container-arrow-right:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-left-color: #ffffff;
+    border-width: 6px;
+    margin-top: -6px;
+}
+
+.tooltip-container-arrow-right:before {
+    border-color: rgba(149, 226, 245, 0);
+    border-left-color: #979797;
+    border-width: 8px;
+    margin-top: -8px;
+}
+
+.tooltip-container-down ul, .tooltip-container-bar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 38px;
+    text-align: left;
+}
+
+.tooltip-container ul, .tooltip-container-arrow-right ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 38px;
+    text-align: center;
+}
+
+.tooltip-line {
+    stroke-width: 1;
+    stroke-dasharray: 3, 3;
+    stroke: #808080;
+    opacity: .4;
+}
+
+.tooltip-header {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tooltip-container-down, .tooltip-container-bar, .tooltip-container, .tooltip-container-arrow-right {
+    background-color: rgba(247, 247, 247, .8);
+    pointer-events: none;
+    white-space: nowrap;
+    border: 1px solid #979797;
+    box-sizing: border-box;
+    border-radius: 2px;
+    color: #333333;
+    padding: 5px;
+    transition: left 50ms linear,
+    top 50ms linear;
+    box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, .5);
+    z-index: 1000;
+}
+
+.tooltip-container-down {
+    position: absolute;
+}
+
+.tooltip-container-bar {
+    position: fixed;
+}
+
+.tooltip-container-down:after,
+.tooltip-container-down:before,
+.tooltip-container-bar:after,
+.tooltip-container-bar:before {
+    left: 50%;
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.tooltip-container-down:after, .tooltip-container-bar:after {
+    border-width: 6px;
+    border-top: 6px solid #FFFFFF;
+    margin-left: -6px;
+}
+
+.tooltip-container-down:before, .tooltip-container-bar:before{
+    border-width: 8px;
+    border-top: 8px solid #979797;
+    margin-left: -8px;
+}
+
+.tooltip-container-down ul, .tooltip-container-bar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 38px;
+    text-align: left;
+}
+
+.tooltip-header {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+// Axis
+.axis-bottom-title, .axis-left-title, .axis-right-title {
+    text {
+        fill: #c4c4c4;
+        font-weight: 700;
+    }
+}
+
+.axis path, .axis .tick line {
+    stroke: #c4c4c4;
+}
+
+// Grid lines
+
+// Remove grid line on 0 level
+.x-grid path,
+.y-grid path,
+.x-grid .tick text,
+.y-grid .tick text {
+    display: none;
+}
+
+.x-grid,
+.y-grid {
+    stroke-width: 1;
+    stroke-dasharray: 3, 3;
+    stroke: #000;
+    opacity: .1;
+}
+
+.y-grid-funnel path {
+    @extend .x-grid;
+    display: inline;
+}
+
+.y-grid .tick:first-of-type line {
+    display: none;
+}
+
+// Os-specific
+/*
+.mac-os .mat-checkbox-label {
+    font-size: 12px;
+}
+
+.windows-os .mat-checkbox-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.windows-os .segmentTitle {
+    font-size: 1rem;
+    font-weight: 600;
+}*/
+
+// Windows
+.windows-os {
+    .axis .tick {
+        font-size: 12px;
+    }
+
+    .caret-value {
+        font-size: 13px;
+    }
+
+    .kpi-value-info-container {
+        font-size: 15px;
+    }
+}
+
+::ng-deep .d3-chart-description p {
+    margin-bottom: 0!important;
+    margin-top: 0!important;
+}
+
+.d3-chart-description {
+    font-size: 12px;
+    color: #979797;
+    white-space: nowrap;
+    text-align: right;
+    height: 10px;
+    display: inline-block;
+    padding-left: 3px;
+    vertical-align: super;
+}
+
+.m-card .hint-icon {
+    font-size: 1.5rem;
+    vertical-align: top !important;
+}
+
+.d3-chart-description .la {
+    font-weight: 400 !important;
+}
+
+.brush .selection {
+    stroke: none !important;
+    fill-opacity: 0.15 !important;
+}
+
+// Animation horizontal bars
+.h-bars {
+    transition: opacity 150ms linear;
+}
+
+.custom-font-family {
+    font-family:
+        -apple-system,
+        "Lucida Grande",
+        Ubuntu sans-serif,
+        Oxygen-Sans,
+        Cantarell,
+        "Helvetica Neue",
+        sans-serif !important;
+}
+
+.areaFill, .areaContour, .spline-line, .line, .dots {
+    transition: opacity linear 150ms;
+}

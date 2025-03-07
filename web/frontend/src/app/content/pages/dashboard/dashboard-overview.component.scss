@@ -1,0 +1,82 @@
+* {
+    line-height: normal;
+}
+
+.dashboard {
+    height: auto;
+}
+
+.row {
+    margin: 0;
+}
+
+m-kpi-widget {
+    width: 100%;
+}
+
+@for $i from 1 through 12 {
+    .col-#{$i} {
+        padding: 0 9px 0 0;
+    }
+
+    .col-sm-#{$i} {
+        padding: 0 9px 0 0;
+    }
+
+    .col-md-#{$i} {
+        padding: 0 9px 0 0;
+    }
+
+    .col-lg-#{$i} {
+        padding: 0 9px 0 0;
+    }
+}
+
+// Loading indicator for chart /////////////////
+.chart-loading-wrapper {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.chart-loading-container {
+    height: 30%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+
+    .loading-box {
+        margin: 0px 5px;
+        background-color: #d7d7d7;
+        height: 10%;
+        width: 5%;
+        opacity: 0.4;
+    }
+
+    @for $i from 1 through 4 {
+        .loading-box-#{$i} {
+            animation: animChartLoader 4300ms ease-in-out $i * 260ms infinite;
+        }
+    }
+}
+
+@keyframes animChartLoader {
+    from {
+        height: 10%;
+    }
+    15% {
+        height: 100%;
+    }
+    35% {
+        height: 10%;
+    }
+    90% {
+        height: 10%;
+    }
+    to {
+        height: 10%;
+    }
+}
+

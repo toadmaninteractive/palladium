@@ -1,0 +1,99 @@
+<div class="d3-chart-wrapper">
+    <ng-container *ngIf="drawingSeries.length > 1">
+        <ng-container *ngIf="(options$ | async).showLegend">
+            <div class="d3-legend-wrapper">
+                <div class="d3-legend-container">
+                    <div class="d3-legend-item"
+                         (click)="toggleSeries()" [style.opacity]=" showPoint ? 1 : 0.6">
+                        <span class="d3-legend-icon"
+                              [style.background-color]="'#6bcaff'">
+                        </span>
+
+                        <span *ngIf="showPoint"
+                              class="d3-legend-text"
+                              [style.opacity]="1">Outliers on
+                        </span>
+
+                        <span *ngIf="!showPoint"
+                              class="d3-legend-text"
+                              [style.opacity]="1">Outliers Off
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </ng-container>
+    <div class="block-relative">
+        <svg #chartContainer
+             [style.width]="'100%'"
+             [style.height.px]="450">
+
+            <defs>
+                <clipPath [id]="'clip' + uniqueId">
+                    <rect [attr.width]="plotProps.width" [attr.height]="plotProps.height"></rect>
+                </clipPath>
+            </defs>
+
+            <g class="inner" #inner
+               [style.height.px]="plotProps.height"
+               [style.width.px]="plotProps.width"
+               [attr.transform]="'translate('+ padding.left + ','+ padding.top +')'">
+                <!--
+                <g class="tooltip-line" *ngIf="!!(series$ | async) && (series$ | async).length">
+                    <path [attr.d]="drawVerticalLine(tooltipXCoordinate$ | async)"></path>
+                </g>-->
+
+                <g class="axis-bottom-title"
+                   *ngIf="(options$ | async).xAxisTitle"
+                   [attr.transform]="'translate('+ bottomAxisTranslate + ',' + (plotProps.height + padding.bottom - 10) + ')'">
+                    <!-- 10px - margin between axis label and bottom line -->
+                    <text>{{ (options$ | async).xAxisTitle }}</text>
+                </g>
+
+                <g class="axis-left-title"
+                   *ngIf="(options$ | async).yAxisTitle"
+                   [attr.transform]="'rotate(-90)  translate('+ (-leftAxisTitleTranslate) +','+ (-maxLabelYPrimaryWidth) +')'">
+                    <text>{{ (options$ | async).yAxisTitle }}</text>
+                </g>
+
+                <g class="axis axis-x-bottom" #axisBottom
+                   [attr.transform]="'translate(0,' + plotProps.height + ')'">
+                </g>
+
+                <g class="x-grid" #xGrid
+                   [attr.transform]="'translate(0,' + plotProps.height +')'">
+                </g>
+
+                <g class="y-grid" #yGrid></g>
+
+                <g class="axis axis-y-left" #axisLeft></g>
+
+                <g #plotContainer class="plot">
+                    <rect #zoomContainer
+                          [attr.fill]="'transparent'"
+                          [style.width]="'100%'">
+                    </rect>
+
+                    <g #boxContainer
+                       [attr.transform]="((options$ | async).xAxisType === axisTypeEnum.Text && xPrimaryScale) ? 'translate('+ xPrimaryScale.bandwidth() / 2 +',0)' : 'translate(0,0)' "
+                       class="box"></g>
+                </g>
+
+            </g>
+        </svg>
+
+        <div class="tooltip-container-down" #tooltipContainer
+             *ngIf="drawingSeries.length > 0"
+             [style.opacity]="(tooltipXCoordinate$ | async) ? '.8' : '0'"
+             [style.top.px]="tooltipPosition.top"
+             [style.left.px]="tooltipPosition.left">
+            <span class="tooltip-header">{{ tooltipHeader }}</span>
+            <ul [innerHTML]="tooltipContent | safe : 'html'"></ul>
+        </div>
+
+        <span class="d3-chart-description">
+            Info: Hold Shift and scroll to zoom.
+        </span>
+    </div>
+</div>
+<canvas #measureCanvas style="display: none"></canvas>

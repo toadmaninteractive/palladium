@@ -1,0 +1,80 @@
+<div class="d3-section" [style.width.px]="width + 40">
+    <ng-container *ngIf="{ data: series$ | async } as x">
+        <div class="d3-loader" #loader>
+            <m-loading-indicator [isInline]="true"></m-loading-indicator>
+        </div>
+
+        <div class="d3-heatmap-chart" *ngIf="x.data; else noMapError">
+            <div class="heatmap-over-image">
+                <svg
+                    [attr.width]="(width + 128) + 'px'"
+                    [attr.height]="height + 'px'"
+                    [attr.id]="'axissvg'"
+                    (mousemove)="showTooltip($event)"
+                    (mouseleave)="hideTooltip()">
+                    <g class="zoomableOf"></g>
+                </svg>
+            </div>
+
+            <div class="heatmap-inner-image">
+                <svg
+                    #svg
+                    class="imagesvg"
+                    [attr.width]="width + 'px'"
+                    [attr.height]="height + 'px'"
+                    [attr.preserveAspectRatio]="'none'"
+                    [attr.id]="'imagesvg'">
+                    <defs>
+                        <filter [attr.id]="'blurMe'">
+                            <feGaussianBlur [attr.in]="'SourceGraphic'" [attr.stdDeviation]="'35'" />
+                        </filter>
+
+                        <pattern
+                            [attr.id]="'img1'"
+                            [attr.patternUnits]="'userSpaceOnUse'"
+                            [attr.width]="'100%'"
+                            [attr.height]="'100%'">
+                            <image
+                                [attr.xlink:href]="url"
+                                [attr.x]="'0'"
+                                [attr.y]="'0'"
+                                [attr.width]="'100%'"
+                                [attr.height]="'100%'" />
+                        </pattern>
+
+                        <linearGradient [attr.id]="'legend1'">
+                            <stop [attr.offset]="'0%'" [attr.stop-color]="'#16cbe0'" />
+                            <stop [attr.offset]="'25%'" [attr.stop-color]="'#0fff83'" />
+                            <stop [attr.offset]="'50%'" [attr.stop-color]="'#fefe22'" />
+                            <stop [attr.offset]="'75%'" [attr.stop-color]="'#ffa000'" />
+                            <stop [attr.offset]="'100%'" [attr.stop-color]="'#ff2400'" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+
+            <div class="d3-heatmap-brush">
+                <svg
+                    #svgbrush
+                    class="d3brushmapimage"
+                    [attr.width]="(width - 1) + 'px'"
+                    [attr.height]="(height - 1) + 'px'"
+                    [attr.preserveAspectRatio]="'none'">
+                </svg>
+            </div>
+
+            <span class="d3-chart-description mt-2">
+                Info: <strong class="f-w-600">SHIFT + SCROLL</strong> to zoom.
+                Hold <strong class="f-w-600">CTRL</strong> for coordinates.
+                Hold <strong class="f-w-600">S</strong> for selection.
+                <strong class="f-w-600">ESC</strong> to exit selection mode.
+            </span>
+        </div>
+    </ng-container>
+</div>
+
+<ng-template #noMapError>
+    <div class="m-card-error f-s-14 f-w-400 mar-r-l" *ngIf="{ options: options$ | async } as x">
+        Map options are not set for <strong>{{ x.options?.name }}</strong>
+    </div>
+</ng-template>

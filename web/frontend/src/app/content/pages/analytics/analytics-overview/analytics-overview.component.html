@@ -1,0 +1,302 @@
+<div *ngIf="analyticsData$ | async else loading">
+    <ng-container *ngIf="(analyticsData$ | async).queries.length > 0 else noProjectQueries">
+        <!-- Query types -->
+        <div class="row first-row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <h6 class="m-heading">Query types</h6>
+
+                <button
+                    class="btn btn-brand m-btn m-btn--air m-btn-metric-type bold"
+                    [class.active]="isAllMetricActive()"
+                    [class.disabled]="!isAllMetricActive()"
+                    (click)="toggleAllMetric()">
+                    All
+                </button>
+
+                <button
+                    *ngFor="let metric of (analyticsData$ | async).metrics"
+                    class="btn btn-brand m-btn m-btn--air m-btn-metric-type"
+                    [class.active]="this.metricMap.get(metric.id)"
+                    [class.disabled]="!this.metricMap.get(metric.id)"
+                    (click)="toggleMetric(metric.id)">
+                    {{ metric.name }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters and query parameters -->
+        <div class="row" *ngIf="queryParamMap.size > 0">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <h6 class="m-heading">Filters</h6>
+
+                <!-- Injected -->
+                <ng-container *ngIf="injectedParams?.length > 0">
+                    <div *ngFor="let param of injectedParams">
+                        <m-param-box
+                            [name]="param.name"
+                            [isRequired]="(requiredParams$ | async).has(param.id)"
+                            [type]="param.type"
+                            [value]="dataMap.has(param.key) ? dataMap.get(param.key) : null"
+                            [key]="param.key"
+                            [selectOptions]="param.values ? param.values : (dynamicDataMap.has(param.key) ? dynamicDataMap.get(param.key) : null)"
+                            (onChange)="onParamChange(param, $event)"
+                            (onRemove)="onParamRemove(param)">
+                        </m-param-box>
+                    </div>
+                </ng-container>
+
+                <!-- Available -->
+                <ng-container *ngIf="availableParams?.length > 0">
+                    <div class="m-plus" #filtersMenuTrigger="matMenuTrigger" [matMenuTriggerFor]="filtersMenu"
+                         (click)="filtersMenuTrigger.openMenu()"></div>
+
+                    <mat-menu #filtersMenu="matMenu">
+                        <ng-container *ngFor="let param of availableParams">
+                            <button mat-menu-item (click)="onParamAdd(param)">
+                                {{ param.name }}
+                            </button>
+                        </ng-container>
+                    </mat-menu>
+                </ng-container>
+            </div>
+        </div>
+
+        <!-- Query -->
+        <div class="query-wrapper" *ngIf="filteredQueries$ | async">
+            <h6 class="m-heading">Query</h6>
+            <div class="query-drop-down-row">
+                <form style="width: 100%">
+                    <mat-form-field class="m-metric-select">
+                        <mat-select [ngModel]="activeQuery$ | async" [ngModelOptions]="{ standalone: true }"
+                                    (selectionChange)="onQueryChange($event.value)">
+                            <mat-select-trigger>
+                                {{ (activeQuery$ | async)?.name }}
+                            </mat-select-trigger>
+
+                            <mat-option>
+                                <ngx-mat-select-search
+                                    [formControl]="queryFilterCtrl"
+                                    placeholderLabel="Start typing for filtering"
+                                    noEntriesFoundLabel="No queries match filter criteria">
+                                </ngx-mat-select-search>
+                            </mat-option>
+
+                            <mat-option *ngFor="let query of filteredQueries$ | async" [value]="query">
+                            <span class="m-option-font" [class.italic]="query['_isOmitted']">
+                                {{ query.name }}
+                            </span>
+
+                                <span
+                                    class="m-option-small italic ml-1"
+                                    *ngIf="query['_isActive'] && query['_isOmitted']">
+                                omitted
+                            </span>
+                            </mat-option>
+                        </mat-select>
+
+                        <mat-icon class="m-search-icon f-s-24">search</mat-icon>
+                    </mat-form-field>
+                </form>
+
+                <button
+                    class="btn query-btn btn-metal m-btn m-btn--air m-btn-metric-type bold"
+                    style="width: 40px; height: 40px; padding: 2px"
+                    (click)="sendQuery()">
+                    <i class="la la-refresh hint-icon f-w-600 f-s-24"></i>
+                </button>
+                <div class="m-btn-csv-download" [hidden]="(queryResult$ | async)?.length === 0">
+                    <a
+                        class="btn btn-brand m-btn m-btn--air m-btn-download active"
+                        csvLink
+                        [data]="dataSource.data"
+                        filename="{{ database }}_{{ (activeQuery$ | async)?.key }}.csv">
+                        Download CSV
+                    </a>
+                </div>
+            </div>
+
+            <!-- Query block -->
+            <div *ngIf="(activeQuery$ | async)?.nodes?.length > 0" class="ldfjkdsl;kf;lskf;lsdkf">
+                <!-- Query in progress -->
+                <ng-container
+                    *ngIf="queryInProgress$ | async"
+                    [ngTemplateOutlet]="loading">
+                </ng-container>
+
+                <!-- Query failed -->
+                <ng-container
+                    *ngIf="queryError$ | async"
+                    [ngTemplateOutlet]="error"
+                    [ngTemplateOutletContext]="{ errorMsg: queryError$ |async, errorType: queryError$ | async }">
+                </ng-container>
+
+                <mat-tab-group class="neat-font" [hidden]="(queryResult$ | async)?.length === 0">
+                    <mat-tab label="Visual">
+                        <div *ngFor="let node of (queryResult$ | async); index as i">
+                            <!-- Sub-query failed -->
+                            <ng-container
+                                *ngIf="!node.data || node.data.length === 0"
+                                [ngTemplateOutlet]="queryError"
+                                [ngTemplateOutletContext]="{ name: node.visualization.name }">
+                            </ng-container>
+
+                            <!-- Sub-query succeeded -->
+                            <ng-container *ngIf="node.data" [ngSwitch]="node.visualization.kind">
+                                <!-- Value indicator -->
+                                <m-value-card
+                                    *ngSwitchCase="nodeKind.Indicator"
+                                    [value]="node.data.value"
+                                    [caption]="node.data.label"
+                                    [description]="node.visualization.label"
+                                    [tooltipCaption]="node.visualization.description">
+                                </m-value-card>
+
+                                <!-- D3 basic plot -->
+                                <m-chart-box
+                                    class="common-plot"
+                                    *ngSwitchCase="nodeKind.CommonPlot"
+                                    [data]="node.data"
+                                    [options]="node.visualization"
+                                    [uniqueId]="(activeQuery$ | async)?.key + '-' + i">
+                                    <ng-template>
+                                        <m-d3-plot [data]="node.data" [options]="node.visualization" [uniqueId]="(activeQuery$ | async)?.key + '-' + i"></m-d3-plot>
+                                    </ng-template>
+                                </m-chart-box>
+
+                                <!-- D3 box plot -->
+                                <m-chart-box
+                                    class="box-plot"
+                                    *ngSwitchCase="nodeKind.BoxPlot"
+                                    [data]="node.data"
+                                    [options]="node.visualization"
+                                    [uniqueId]="(activeQuery$ | async)?.key + '-' + i">
+                                    <ng-template>
+                                        <m-d3-box-plot [data]="node.data" [options]="node.visualization" [uniqueId]="(activeQuery$ | async)?.key + '-' + i"></m-d3-box-plot>
+                                    </ng-template>
+                                </m-chart-box>
+
+                                <!-- D3 synchronized plot -->
+                                <m-chart-box
+                                    class="sync"
+                                    *ngSwitchCase="nodeKind.SynchronizedPlot"
+                                    [data]="node.data"
+                                    [options]="node.visualization">
+                                    <ng-template>
+                                        <m-d3-synchronized [seriesData]="node.data" [options]="node.visualization"></m-d3-synchronized>
+                                    </ng-template>
+                                </m-chart-box>
+
+                                <!-- D3 horizontal bars -->
+                                <m-chart-box
+                                    *ngSwitchCase="nodeKind.HorizontalBars"
+                                    [data]="node.data"
+                                    [options]="node.visualization">
+                                    <ng-template>
+                                        <m-d3-horizontal-bars [seriesData]="node.data" [options]="node.visualization" [countRows]="0"></m-d3-horizontal-bars>
+                                    </ng-template>
+                                </m-chart-box>
+
+                                <!-- D3 Scatter plot -->
+                                <m-chart-box
+                                    *ngSwitchCase="nodeKind.Scatter"
+                                    [data]="node.data"
+                                    [options]="node.visualization">
+                                    <ng-template>
+                                        <m-d3-scatterplot [seriesData]="node.data" [options]="node.visualization"></m-d3-scatterplot>
+                                    </ng-template>
+                                </m-chart-box>
+
+                                <!-- D3 funnel -->
+                                <ng-container *ngSwitchCase="nodeKind.Funnel">
+                                    <m-chart-box
+                                        *ngIf="node.data.length === 1"
+                                        [data]="node.data"
+                                        [options]="node.visualization">
+                                        <ng-template>
+                                            <m-d3-funnel [seriesData]="node.data" [options]="node.visualization"></m-d3-funnel>
+                                        </ng-template>
+                                    </m-chart-box>
+
+                                    <m-chart-box
+                                        *ngIf="node.data.length > 1"
+                                        [data]="node.data"
+                                        [options]="node.visualization">
+                                        <ng-template>
+                                            <m-d3-segmented-funnel [seriesData]="node.data" [options]="node.visualization"></m-d3-segmented-funnel>
+                                        </ng-template>
+                                    </m-chart-box>
+                                </ng-container>
+
+                                <!-- Heatmap -->
+                                <m-chart-box
+                                    *ngSwitchCase="nodeKind.Heatmap"
+                                    [options]="node.visualization"
+                                    [data]="node.data"
+                                    [onlyFixed]="true">
+                                    <ng-template>
+                                        <m-d3-heatmap [data]="node.data" [mapOptions]="node.map" [options]="node.visualization"></m-d3-heatmap>
+                                    </ng-template>
+                                </m-chart-box>
+
+                                <!-- Killmap -->
+                                <m-chart-box
+                                    *ngSwitchCase="nodeKind.Killmap"
+                                    [data]="node.data"
+                                    [options]="node.visualization"
+                                    [onlyFixed]="true">
+                                    <ng-template>
+                                        <m-d3-killmap [mapOptions]="node.map" [data]="node.data" [options]="node.visualization"></m-d3-killmap>
+                                    </ng-template>
+                                </m-chart-box>
+                            </ng-container>
+                        </div>
+                    </mat-tab>
+
+                    <mat-tab label="Data Table">
+                        <table mat-table matSort matSortDisableClear (matSortChange)="sortTable($event)"
+                               [dataSource]="dataSource"
+                               class="mat-elevation-z8">
+                            <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ column }}</th>
+
+                                <td mat-cell *matCellDef="let element">
+                                    {{ element[column]?.length ? element[column] : (+element[column]).toFixed(1) }}
+                                </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                        </table>
+
+                        <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+        </div>
+
+    </ng-container>
+</div>
+
+<ng-template #loading>
+    <m-loading-indicator [isInline]="true"></m-loading-indicator>
+</ng-template>
+
+<ng-template #noProjectQueries>
+    <div class="row first-row">
+        <div class="col-sm-12">
+            <div class="card card-body m-card-warning f-s-14 f-w-400">
+                <div><span>Project <strong>{{ project.name }}</strong> does not contain any queries</span></div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #error let-errorMsg="errorMsg" let-errorType="errorType">
+    <m-analytics-error [currentErrorType]="errorType" [errorMessage]="errorMsg"></m-analytics-error>
+</ng-template>
+
+<ng-template #queryError let-name="name">
+    <div class="card card-body m-card-error f-s-14 f-w-400">
+        <span>Sub-query <strong>{{ name }}</strong> failed</span>
+    </div>
+</ng-template>

@@ -1,0 +1,46 @@
+.m-badge {
+    font-size: 1em;
+    border-radius: 5px;
+    padding: 3px;
+    margin: 3px;
+}
+
+.m-btn-disabled {
+    pointer-events: none;
+}
+
+.hint-icon {
+    font-size: 1.3rem !important;
+    font-weight: 600;
+    vertical-align: super;
+    color: rgba(151, 151, 151, .5);
+    cursor: pointer;
+    transition: all 125ms linear;
+}
+
+.hint-icon:hover {
+    color: rgba(151, 151, 151, 1);
+}
+
+.hint-icon-btn {
+    font-size: 2rem;
+    vertical-align: middle;
+    color: #716aca;
+    cursor: pointer;
+}
+
+.m-btn-hint {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+}
+
+.m-btn-grey {
+    background-color: #eaeaea;
+}
+
+.btn-outline-secondary {
+    color: #575962 !important;
+    padding: 4px;
+    border-radius: 5px;
+}

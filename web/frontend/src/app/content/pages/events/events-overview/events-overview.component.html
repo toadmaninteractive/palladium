@@ -1,0 +1,88 @@
+<div class="m-portlet m-portlet--ngviewer basic-font">
+    <div class="m-portlet__head compact">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h1 class="m-portlet__head-text basic-font f-w-700 black">
+                    Tracked event list
+                </h1>
+
+                <i class="la la-info-circle hint-icon ml-1" style="margin-top: -5px" matTooltip="Click to show description" matTooltipClass="basic-font" (click)="openDialog()"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="m-portlet__body m-portlet__body--no-padding">
+        <table mat-table [dataSource]="dataSource" matSort matSortActive="name" matSortDirection="asc" matSortDisableClear (matSortChange)="sortTable($event)" *ngIf="dataSource">
+            <!-- Event name -->
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'cell-event-name'">Event Name</th>
+
+                <td mat-cell *matCellDef="let event" [ngClass]="'cell-event-name'">
+                    <strong class="v-a-text-bottom" style="line-height: 20px">{{ event.name }}</strong>
+                    <i class="la la-info-circle hint-icon ml-1 f-s-20" [matTooltip]="event.description || null" matTooltipClass="basic-font" *ngIf="event.description"></i>
+                </td>
+            </ng-container>
+
+            <!-- Group -->
+            <ng-container matColumnDef="group">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Group</th>
+
+                <td mat-cell *matCellDef="let event">
+                    {{ event['group'] || 'None' }}
+                </td>
+            </ng-container>
+
+            <!-- Status -->
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>In game/Tested/Active</th>
+
+                <td mat-cell *matCellDef="let event" [ngClass]="'cell-event-status'">
+                    <span class="m-badge" [ngClass]="{ 'm-badge--success': event.isImplemented, 'm-badge--secondary': !event.isImplemented }">
+                        i
+                    </span>
+
+                    <span class="m-badge" [ngClass]="{ 'm-badge--success': event.isTested, 'm-badge--secondary': !event.isTested }">
+                        t
+                    </span>
+
+                    <span class="m-badge" [ngClass]="{ 'm-badge--success': event.isActivated === true, 'm-badge--secondary': !event.isActivated }">
+                        a
+                    </span>
+                </td>
+            </ng-container>
+
+            <!-- Date added -->
+            <ng-container matColumnDef="addedAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Added</th>
+
+                <td mat-cell *matCellDef="let event" class="m-date">
+                    {{ event.addedAt | date: 'dd/MM/yyyy' }}
+                </td>
+            </ng-container>
+
+            <!-- Parameter list -->
+            <ng-container matColumnDef="fields">
+                <th mat-header-cell *matHeaderCellDef style="width: 65%;">Parameter list</th>
+
+                <td mat-cell *matCellDef="let event" style="width: 65%;">
+                    <span
+                        class="btn m-btn--pill btn-outline-secondary mr-2 mt-1 mb-1 m-btn-disabled m-btn-grey"
+                        *ngFor="let field of eventData?.superFields">
+                        {{ field }}
+                    </span>
+
+                    <span
+                        class="btn m-btn--pill btn-outline-secondary mr-2 mt-1 mb-1 m-btn-disabled"
+                        *ngFor="let field of event.fields">
+                        {{ field }}
+                    </span>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [pageSize]="pageSize" [pageSizeOptions]="pageSizes" showFirstLastButtons></mat-paginator>
+    </div>
+</div>

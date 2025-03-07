@@ -1,0 +1,5 @@
+<div [ngClass]="{ 'cssload-box-loading': !isInline, 'cssload-box-loading-inline': isInline }">
+    <div class="loading-text non-selectable">
+        {{ text || 'Loading...' }}
+    </div>
+</div>

@@ -1,0 +1,44 @@
+::ng-deep .tooltip-line {
+    stroke-width: 1;
+    stroke-dasharray: 3, 3;
+    stroke: #808080;
+    opacity: .4;
+}
+
+.tooltip-container {
+    transition: left 0ms linear !important;
+}
+
+::ng-deep .tooltip-container ul, ::ng-deep .tooltip-container-arrow-right ul {
+    text-align: left !important;
+}
+
+::ng-deep .plot-title {
+    font-size: 13px;
+}
+
+::ng-deep .x-grid {
+    stroke-width: 1;
+    stroke-dasharray: 3, 3;
+    stroke: #000;
+    opacity: .1;
+}
+
+::ng-deep .x-grid .tick text {
+    display: none;
+}
+
+::ng-deep .y-grid {
+    stroke-width: 1;
+    stroke-dasharray: 3, 3;
+    stroke: #000;
+    opacity: .1;
+}
+
+::ng-deep .y-grid .tick text {
+    display: none;
+}
+
+::ng-deep .y-grid .tick line {
+    stroke: #000;
+}

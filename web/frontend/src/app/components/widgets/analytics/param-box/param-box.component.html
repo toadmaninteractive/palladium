@@ -1,0 +1,82 @@
+<div class="m-filter-container">
+    <div class="m-filter-item list-group">
+        <label class="list-group-item b-l-0 b-t-0 b-r-0 f-w-500" style="background-color: FloralWhite">
+            {{ name }}
+
+            <div *ngIf="!isRequired" class="m-btn-close">
+                <span class="btn btn-danger m-btn m-btn--icon btn-sm m-btn--icon-only" (click)="remove()">
+                    <i class="la la-close"></i>
+                </span>
+            </div>
+        </label>
+
+
+        <div class="d-table" [ngSwitch]="type">
+            <div *ngSwitchCase="enumType.Boolean" class="form-control m-form-control b-0" style="min-width: 90px; height: 38px">
+                <div class="m-mat-input m-checkbox pl-0" style="margin-top: -4px">
+                    <mat-checkbox color="primary" [ngModel]="value" (ngModelChange)="change($event)">
+                        Yes
+                    </mat-checkbox>
+                </div>
+            </div>
+
+            <div *ngSwitchCase="enumType.Numeric" class="m-form-control b-0" style="height: 38px">
+                <div class="m-mat-input">
+                    <input type="number" [ngModel]="value" (ngModelChange)="isNumber($event) && change($event)">
+                </div>
+            </div>
+
+            <div *ngSwitchCase="enumType.Date" class="form-control m-form-control pr-1 b-0" style="height: 38px">
+                <input [matDatepicker]="picker" [ngModel]="value" (dateChange)="change($event.value)" class="m-datepicker-input">
+
+                <span (click)="picker.open()" style="float: left">
+                    {{ value ? (value | date: 'd MMM yyyy') : 'Select date' }}
+                </span>
+
+                <mat-datepicker-toggle matSuffix [for]="picker" style="float:right; margin-top: -12px;"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </div>
+
+            <div *ngSwitchCase="enumType.DateRange" class="form-control m-form-control pr-1 b-0" style="height: 38px">
+                <input [satDatepicker]="periodPicker" [ngModel]="value" (dateChange)="change($event.value)" class="m-datepicker-input">
+
+                <span (click)="periodPicker.open()" style="float: left" [ngSwitch]="!!value">
+                    <ng-container *ngSwitchCase="true">
+                        {{ value.begin | date: 'd MMM yyyy' }} &ndash; {{ value.end | date: 'd MMM yyyy' }}
+                    </ng-container>
+
+                    <ng-container *ngSwitchDefault>Select date</ng-container>
+                </span>
+
+                <sat-datepicker #periodPicker [rangeMode]="true"></sat-datepicker>
+                <sat-datepicker-toggle matSuffix [for]="periodPicker" style="float:right; margin-top: -12px;"></sat-datepicker-toggle>
+            </div>
+
+            <div *ngSwitchCase="enumType.TimePartition" class="form-control m-form-control b-0" style="min-width: 95px; height: 38px">
+                <mat-select [ngModel]="value" (selectionChange)="change($event.value)">
+                    <mat-option [value]="enumPartition.Day">Day</mat-option>
+                    <mat-option [value]="enumPartition.Week">Week</mat-option>
+                    <mat-option [value]="enumPartition.Month">Month</mat-option>
+                    <mat-option [value]="enumPartition.Quarter">Quarter</mat-option>
+                </mat-select>
+            </div>
+
+            <div *ngSwitchCase="enumType.Select" class="form-control m-form-control b-0" style="min-width: 150px; height: 38px">
+                <mat-select [ngModel]="value" (selectionChange)="change($event.value)" panelClass="dynamic-options" placeholder="Select option...">
+                    <mat-select-trigger [matTooltip]="value" matTooltipPosition="below">
+                        {{ value }}
+                    </mat-select-trigger>
+
+                    <mat-option *ngFor="let item of selectOptions" [value]="item.value" [matTooltip]="item.label" matTooltipPosition="right">
+                        <b class="block">{{ item.value }}</b>
+                        <span class="alt">{{ item.label }}</span>
+                    </mat-option>
+                </mat-select>
+            </div>
+
+            <ng-container *ngSwitchDefault>
+                Undefined type
+            </ng-container>
+        </div>
+    </div>
+</div>
