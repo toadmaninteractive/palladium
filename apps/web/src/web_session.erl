@@ -115,7 +115,7 @@ encode(?actor_personnel, SessionId) ->
     try
         JWK = web_storage:jwk(),
         JsonStr = web_util:encode_json(#{user_type => ?actor_personnel, session_id => SessionId}),
-        EncodedSession = jws:encode_compact(JsonStr, #{alg => <<"RS256">>}, JWK),
+        EncodedSession = jws:encode_compact(JsonStr, #{<<"alg">> => <<"RS256">>}, JWK),
         {ok, EncodedSession}
     catch _Type:_What:_StackTrace ->
         {error, jwk_not_loaded}
