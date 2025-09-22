@@ -4,3 +4,4 @@ builds
 build
 deps
 /erl_crash.dump
+/web/pem/server.key
